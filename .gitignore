@@ -1,0 +1,13 @@
+node_modules
+dist
+
+uploads
+.env
+# Ignored folders
+src/controllers/
+src/views/
+
+# Ignored files
+src/app.ts
+src/router.ts
+src/router-admin.ts

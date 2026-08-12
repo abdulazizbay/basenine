@@ -1,0 +1,10 @@
+export enum Address {
+  SEOUL = "SEOUL",
+  BUSAN = "BUSAN",
+  INCHEON = "INCHEON",
+  DAEGU = "DAEGU",
+  DAEJEON = "DAEJEON",
+  GWANGJU = "GWANGJU",
+  ULSAN = "ULSAN",
+  SEJONG = "SEJONG",
+}
