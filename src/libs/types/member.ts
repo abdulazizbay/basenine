@@ -6,27 +6,25 @@ import { Request } from "express";
 export interface Member {
   _id: ObjectId;
   memberNick: string;
-  memberPhone: string;
   memberPassword: string;
   memberType: MemberType;
-  memberStatus: MemberStatus;
-  memberDesc?: string;
-  memberAdress?: string;
   memberImage?: string;
-  memberPoints: number;
+  memberStatus: MemberStatus;
+  memberPhone: string;
+  memberAdress?: string;
+  memberDesc?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 export interface MemberInput {
   memberNick: string;
-  memberPhone: string;
   memberPassword: string;
   memberType?: MemberType;
   memberStatus?: MemberStatus;
-  memberDesc?: string;
-  memberAdress?: string;
   memberImage?: string;
-  memberPoints?: number;
+  memberPhone: string;
+  memberAdress?: string;
+  memberDesc?: string;
 }
 
 export interface LoginInput {
@@ -43,9 +41,8 @@ export interface MemberUpdateInput {
   memberStatus?: MemberStatus;
   memberDesc?: string;
   memberAdress?: string;
-  memberImage?: string; 
+  memberImage?: string;
 }
-
 
 export interface ExtendedRequest extends Request {
   member: Member;
