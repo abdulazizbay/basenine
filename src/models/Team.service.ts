@@ -15,6 +15,7 @@ import TeamModel from "../schema/Team.model";
 import { ViewInput } from "../libs/types/view";
 import { ViewGroup } from "../libs/enums/view.enum";
 import ViewService from "./View.service";
+import { FavouriteGroup } from "../libs/enums/favourites.enum";
 
 class TeamService {
   private readonly teamModel;
@@ -23,7 +24,7 @@ class TeamService {
     this.teamModel = TeamModel;
     this.viewService = new ViewService();
   }
-  
+
   // SPA
   // filter  createdAt, subsicber, viewed,
   // also inlclude all teams qta
@@ -58,37 +59,74 @@ class TeamService {
   }
 
   public async getTeam(memberId: ObjectId | null, id: string): Promise<Team> {
-    console.log(memberId);
-    
     const teamId = shapeIntoMongooseObjectId(id);
-    let result = await this.teamModel
-      .findOne({
-        _id: teamId,
-      })
+
+    const result = await this.teamModel
+      .aggregate([
+        { $match: { _id: teamId } },
+        {
+          $lookup: {
+            from: "favourites",
+            let: { targetId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$favouriteRefId", "$$targetId"] },
+                      { $eq: ["$favouriteGroup", FavouriteGroup.TEAM] },
+                      { $eq: ["$memberId", memberId] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "meFavourite",
+          },
+        },
+        {
+          $addFields: {
+            meFavourited: { $gt: [{ $size: "$meFavourite" }, 0] },
+          },
+        },
+        { $project: { meFavourite: 0 } },
+      ])
       .exec();
-    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    if (!result.length)
+      throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+    let team: Team = result[0];
 
     if (memberId) {
-      // check existance
       const input: ViewInput = {
-        memberId: memberId,
+        memberId,
         viewRefId: teamId,
         viewGroup: ViewGroup.TEAM,
       };
       const existView = await this.viewService.checkViewExistence(input);
       if (!existView) {
-        // insert view
         await this.viewService.insertMemberView(input);
-        // Increase Counts
-        result = await this.teamModel
-          .findByIdAndUpdate(
-            teamId,
-            { $inc: { teamViews: +1 } },
-            { new: true },
-          )
+        const updated = await this.teamModel
+          .findByIdAndUpdate(teamId, { $inc: { teamViews: 1 } }, { new: true })
           .exec();
+        if (updated) team.teamViews = updated.teamViews;
       }
     }
+
+    return team;
+  }
+  public async updateSubscriberCount(
+    teamId: ObjectId,
+    amount: number,
+  ): Promise<Team> {
+    const result = await this.teamModel
+      .findByIdAndUpdate(
+        teamId,
+        { $inc: { teamSubscribers: amount } },
+        { new: true },
+      )
+      .exec();
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
     return result;
   }
 

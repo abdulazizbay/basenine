@@ -16,7 +16,7 @@ export interface Player {
   //status
 }
 export interface Players {
-  list: Team[];
+  list: Player[];
   metaCounter: { total: number }[];
 }
 
@@ -40,7 +40,6 @@ export interface PlayerInquiry {
 
 export enum PlayerOrder {
   CREATED_AT = "createdAt",
-  SUBSCRIBERS = "playerSubscribers",
   VIEWS = "playerViews",
 }
 

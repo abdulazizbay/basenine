@@ -1,6 +1,6 @@
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { Direction, T } from "../libs/types/common";
-import { AdminRequest } from "../libs/types/member";
+import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { PlayerInput, PlayerInquiry, PlayerOrder } from "../libs/types/player";
 import PlayerService from "../models/Player.service";
 import { Response, Request } from "express";
@@ -30,18 +30,18 @@ playerController.getPlayers = async (req: Request, res: Response) => {
   }
 };
 
-// playerController.getTeam = async (req: ExtendedRequest, res: Response) => {
-//   try {
-//     const { id } = req.params;
-//     const memberId = req.member?._id ?? null;
-//     const result = await teamService.getTeam(memberId, id as string);
+playerController.getPlayer = async (req: ExtendedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const memberId = req.member?._id ?? null;
+    const result = await playerService.getPlayer(memberId, id as string);
 
-//     res.status(HttpCode.OK).json({ result });
-//   } catch (err) {
-//     if (err instanceof Errors) res.status(err.code).json(err);
-//     else res.status(Errors.standard.code).json(Errors.standard);
-//   }
-// };
+    res.status(HttpCode.OK).json({ result });
+  } catch (err) {
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
 
 // /**  SSR */
 playerController.createNewPlayer = async (req: AdminRequest, res: Response) => {

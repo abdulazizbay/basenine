@@ -1,29 +1,35 @@
 import { shapeIntoMongooseObjectId } from "../libs/config";
+import { ViewGroup } from "../libs/enums/view.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { Player, PlayerInput } from "../libs/types/player";
+import { T } from "../libs/types/common";
+import { Player, PlayerInput, PlayerInquiry, Players } from "../libs/types/player";
 import { Team, TeamInput, TeamUpdateInput } from "../libs/types/team";
+import { ViewInput } from "../libs/types/view";
 import PlayerModel from "../schema/Player.model";
+import {ObjectId} from "mongoose"
+import ViewService from "./View.service";
 
 class PlayerService {
   private readonly playerModel;
-
+  public viewService
   constructor() {
     this.playerModel = PlayerModel;
+    this.viewService = new ViewService
   }
  
   // SPA
    // filter  createdAt, subsicber, viewed,
   // also inlclude all players qta
-  public async getTeams(inquiry: TeamInquiry): Promise<Teams> {
+  public async getPlayers(inquiry: PlayerInquiry): Promise<Players> {
     const match: T = {};
 
     if (inquiry.search) {
-      match.teamNick = { $regex: new RegExp(inquiry.search, "i") };
+      match.playerNick = { $regex: new RegExp(inquiry.search, "i") };
     }
 
     const sort: T = { [inquiry.order]: inquiry.direction };
 
-    const result = await this.teamModel
+    const result = await this.playerModel
       .aggregate([
         { $match: match },
         {
@@ -43,6 +49,42 @@ class PlayerService {
       throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
     return result[0];
   }
+
+  public async getPlayer(memberId: ObjectId | null, id: string): Promise<Player> {
+
+    
+    const playerId = shapeIntoMongooseObjectId(id);
+    let result = await this.playerModel
+      .findOne({
+        _id: playerId,
+      })
+      .exec();
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+
+    if (memberId) {
+      // check existance
+      const input: ViewInput = {
+        memberId: memberId,
+        viewRefId: playerId,
+        viewGroup: ViewGroup.PLAYER,
+      };
+      const existView = await this.viewService.checkViewExistence(input);
+      if (!existView) {
+        // insert view
+        await this.viewService.insertMemberView(input);
+        // Increase Counts
+        result = await this.playerModel
+          .findByIdAndUpdate(
+            playerId,
+            { $inc: { playerViews: +1 } },
+            { new: true },
+          )
+          .exec();
+      }
+    }
+    return result;
+  }
+
   // SSR
   public async createNewPlayer(input: PlayerInput): Promise<Player> {
     try {

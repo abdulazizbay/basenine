@@ -1,17 +1,17 @@
+import { shapeIntoMongooseObjectId } from "../libs/config";
+import { FavouriteGroup } from "../libs/enums/favourites.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { Direction, T } from "../libs/types/common";
+import { FavouriteInput } from "../libs/types/favourite";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { ProductInquiry } from "../libs/types/product";
-import {
-
-  TeamInput,
-  TeamInquiry,
-  TeamOrder,
-} from "../libs/types/team";
+import { TeamInput, TeamInquiry, TeamOrder } from "../libs/types/team";
+import FavouriteService from "../models/Favourite.service";
 import TeamService from "../models/Team.service";
 import { Response, Request } from "express";
 
 const teamService = new TeamService();
+const favouriteService = new FavouriteService();
 
 const teamController: T = {};
 
@@ -40,10 +40,63 @@ teamController.getTeam = async (req: ExtendedRequest, res: Response) => {
     const memberId = req.member?._id ?? null;
     const result = await teamService.getTeam(memberId, id as string);
 
-    res.status(HttpCode.OK).json({result});
+    res.status(HttpCode.OK).json({ result });
   } catch (err) {
     if (err instanceof Errors) res.status(err.code).json(err);
     else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
+teamController.getTeamSubscribers = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const page = Number(req.query.page);
+    const limit = Number(req.query.limit);
+
+    const result = await favouriteService.getTeamSubscribers(
+      String(id),
+      page,
+      limit,
+    );
+    res.json(result);
+  } catch (err) {
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
+
+teamController.subscribeTeam = async (req: ExtendedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const input: FavouriteInput = {
+      memberId: req.member._id,
+      favouriteGroup: FavouriteGroup.TEAM,
+      favouriteRefId: shapeIntoMongooseObjectId(id),
+    };
+
+    const result = await favouriteService.addFavourite(input);
+    res.json({ result });
+  } catch (err) {
+    console.log("Error, subscribeTeam", err);
+    const message = err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
+    res.status(err instanceof Errors ? err.code : 400).json({ message });
+  }
+};
+
+teamController.unsubscribeTeam = async (req: ExtendedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const input: FavouriteInput = {
+      memberId: req.member._id,
+      favouriteGroup: FavouriteGroup.TEAM,
+      favouriteRefId: shapeIntoMongooseObjectId(id),
+    };
+
+    await favouriteService.deleteFavourite(input);
+    res.json({ data: true });
+  } catch (err) {
+    console.log("Error, unsubscribeTeam", err);
+    const message = err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
+    res.status(err instanceof Errors ? err.code : 400).json({ message });
   }
 };
 

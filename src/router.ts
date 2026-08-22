@@ -33,10 +33,20 @@ router.post(
 // Team
 router.get("/team/all", teamController.getTeams);
 router.get("/team/:id", memberController.retrieveAuth, teamController.getTeam)
-
+router.get("/team/:id/subscribers", teamController.getTeamSubscribers);
+router.get(
+  "/team/:id/subscribe",
+  memberController.verifyAuth, 
+  teamController.subscribeTeam,
+);
+router.get(
+  "/team/:id/unsubscribe",
+  memberController.verifyAuth, 
+  teamController.unsubscribeTeam,
+);
 
 router.get("/player/all", playerController.getPlayers);
-// router.get("/team/:id", memberController.retrieveAuth, teamController.getTeam)
+router.get("/player/:id", memberController.retrieveAuth, playerController.getPlayer)
 
 // router.get("/member/top-users", memberController.getTopUsers);
 

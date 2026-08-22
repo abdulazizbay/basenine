@@ -8,6 +8,7 @@ export interface Team {
   teamAddress: Address;
   teamSubscribers: number;
   teamViews: number;
+  meFavourited?: boolean;
   createdAt: Date;
   updatedAt: Date;
   // team-status
