@@ -2,23 +2,28 @@ import { shapeIntoMongooseObjectId } from "../libs/config";
 import { ViewGroup } from "../libs/enums/view.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { T } from "../libs/types/common";
-import { Player, PlayerInput, PlayerInquiry, Players } from "../libs/types/player";
+import {
+  Player,
+  PlayerInput,
+  PlayerInquiry,
+  Players,
+} from "../libs/types/player";
 import { Team, TeamInput, TeamUpdateInput } from "../libs/types/team";
 import { ViewInput } from "../libs/types/view";
 import PlayerModel from "../schema/Player.model";
-import {ObjectId} from "mongoose"
+import { ObjectId } from "mongoose";
 import ViewService from "./View.service";
 
 class PlayerService {
   private readonly playerModel;
-  public viewService
+  public viewService;
   constructor() {
     this.playerModel = PlayerModel;
-    this.viewService = new ViewService
+    this.viewService = new ViewService();
   }
- 
+
   // SPA
-   // filter  createdAt, subsicber, viewed,
+  // filter  createdAt, subsicber, viewed,
   // also inlclude all players qta
   public async getPlayers(inquiry: PlayerInquiry): Promise<Players> {
     const match: T = {};
@@ -38,6 +43,20 @@ class PlayerService {
               { $sort: sort },
               { $skip: (inquiry.page - 1) * inquiry.limit },
               { $limit: inquiry.limit },
+              {
+                $lookup: {
+                  from: "teams",
+                  localField: "teamId",
+                  foreignField: "_id",
+                  as: "teamId",
+                },
+              },
+              {
+                $unwind: {
+                  path: "$teamId",
+                  preserveNullAndEmptyArrays: true,
+                },
+              },
             ],
             metaCounter: [{ $count: "total" }],
           },
@@ -50,14 +69,16 @@ class PlayerService {
     return result[0];
   }
 
-  public async getPlayer(memberId: ObjectId | null, id: string): Promise<Player> {
-
-    
+  public async getPlayer(
+    memberId: ObjectId | null,
+    id: string,
+  ): Promise<Player> {
     const playerId = shapeIntoMongooseObjectId(id);
     let result = await this.playerModel
       .findOne({
         _id: playerId,
       })
+      .populate("teamId")
       .exec();
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
 
@@ -79,6 +100,7 @@ class PlayerService {
             { $inc: { playerViews: +1 } },
             { new: true },
           )
+          .populate("teamId")
           .exec();
       }
     }
