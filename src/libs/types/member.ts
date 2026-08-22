@@ -2,6 +2,7 @@ import { Session } from "express-session";
 import { MemberStatus, MemberType } from "../enums/member.enum";
 import { ObjectId } from "mongoose";
 import { Request } from "express";
+import { Address } from "../enums/common.enum";
 
 export interface Member {
   _id: ObjectId;
@@ -23,7 +24,7 @@ export interface MemberInput {
   memberStatus?: MemberStatus;
   memberImage?: string;
   memberPhone: string;
-  memberAdress?: string;
+  memberAdress?: Address;
   memberDesc?: string;
 }
 

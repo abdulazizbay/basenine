@@ -6,7 +6,7 @@ export interface Product {
   _id: ObjectId;
   productStatus: ProductStatus;
   productCollection: ProductCollection;
-  teamId: ObjectId;
+  teamId?: ObjectId | Team;
   productName: string;
   productPrice: number;
   productLeftCount: number;
@@ -28,7 +28,7 @@ export interface ProductInquiry {
 export interface ProductInput {
   productStatus?: ProductStatus;
   productCollection: ProductCollection;
-  teamId: ObjectId;
+  teamId?: ObjectId;
   productName: string;
   productPrice: number;
   productDesc: string;

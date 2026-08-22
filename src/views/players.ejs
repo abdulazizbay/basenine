@@ -1,0 +1,247 @@
+<%- include('includes/header') %>
+
+<link rel="stylesheet" type="text/css" href="/css/players.css" />
+
+<body>
+  <div class="players-container">
+
+    <nav class="admin-navbar">
+      <div class="admin-navbar-inner">
+        <a class="brand" href="/admin/">
+          <span class="brand-mark">B9</span>
+          <span class="brand-name">BaseNine</span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a class="nav-link" href="/admin/">Home</a></li>
+          <li><a class="nav-link" href="/admin/user/all">Users</a></li>
+          <li><a class="nav-link active" href="/admin/player/all">Players</a></li>
+          <li><a class="nav-link" href="/admin/team/all">Teams</a></li>
+          <li><a class="nav-link" href="/admin/game/all">Games</a></li>
+          <li><a class="nav-link" href="/admin/product/all">Products</a></li>
+         
+          <li>
+            <a
+              class="nav-link logout-link"
+              href="/admin/logout"
+              onclick="return confirm('Do you want to logout?')"
+            >Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="menu-frame">
+      <div class="board">
+
+        <!-- ===== LIST VIEW ===== -->
+        <section class="view view-list active" id="playerListView">
+          <div class="page-header">
+            <div>
+              <span class="eyebrow">Roster</span>
+              <h1>Players</h1>
+              <p><%= players.length %> player<%= players.length === 1 ? '' : 's' %> registered</p>
+            </div>
+            <button class="btn btn-primary" id="process-btn" type="button">
+              <span class="btn-plus">+</span> New Player
+            </button>
+          </div>
+
+          <div class="player-table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Photo</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Position</th>
+                  <th scope="col">No.</th>
+                  <th scope="col">Height</th>
+                  <th scope="col">Team</th>
+                  <th scope="col">Views</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!--  LOOP PLAYERS: START  -->
+                <% players.map(function(value, key){ %>
+                <tr>
+                  <td class="cell-muted"><%= key + 1 %></td>
+                  <td>
+                    <img
+                      class="player-thumb"
+                      src="<%= value.playerImages && value.playerImages[0] ? '/' + value.playerImages[0] : '/img/upload.svg' %>"
+                      alt="<%= value.playerNick %>"
+                    />
+                  </td>
+                  <td class="cell-name"><%= value.playerNick %></td>
+                  <td><span class="type-pill"><%= value.playerPosition %></span></td>
+                  <td class="cell-jersey">#<%= value.playerNumber %></td>
+                  <td><%= value.playerHeight %> cm</td>
+                  <td><%= value.teamId && value.teamId.teamNick ? value.teamId.teamNick : "-" %></td>
+                  <td><%= value.playerViews %></td>
+                </tr>
+                <% }) %>
+                <!--  LOOP PLAYERS: END  -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== CREATE VIEW ===== -->
+        <section class="view view-form" id="playerFormView">
+          <form
+            onsubmit="return validatePlayerForm()"
+            action="/admin/player/create"
+            method="POST"
+            class="player-form"
+            enctype="multipart/form-data"
+          >
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">New Player</span>
+                <h1>Player Detail</h1>
+                <p>Fill in the details below to add a player to the roster.</p>
+              </div>
+              <button class="btn btn-ghost" id="cancel-btn" type="button">&larr; Back to players</button>
+            </div>
+
+            <div class="form-card">
+              <div class="long-input">
+                <label>Player Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Koo Ja-wook"
+                  name="playerNick"
+                  class="player-nick"
+                />
+              </div>
+
+              <div class="half-input-frame">
+                <div class="half-input">
+                  <label>Position</label>
+              <select class="player-position" name="playerPosition">
+                <option value="PITCHER">PITCHER</option>
+                <option value="CATCHER">CATCHER</option>
+                <option value="BASEMAN1">BASEMAN1</option>
+                <option value="BASEMAN2">BASEMAN2</option>
+                <option value="BASEMAN3">BASEMAN3</option>
+                <option value="SHORTSTOP">SHORTSTOP</option>
+                <option value="LEFTFIELDER">LEFTFIELDER</option>
+                <option value="CENTERFIELDER">CENTERFIELDER</option>
+                <option value="RIGHTFIELDER">RIGHTFIELDER</option>
+              </select>
+                </div>
+                <div class="half-input">
+                  <label>Jersey Number</label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 5"
+                    name="playerNumber"
+                    class="player-number"
+                  />
+                </div>
+              </div>
+
+              <div class="half-input-frame">
+                <div class="half-input">
+                  <label>Date of Birth</label>
+                  <input
+                    type="date"
+                    name="playerDateOfBirth"
+                    class="player-dob"
+                  />
+                </div>
+                <div class="half-input">
+                  <label>Height (cm)</label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 189"
+                    name="playerHeight"
+                    class="player-height"
+                  />
+                </div>
+              </div>
+
+              <div class="long-input" id="team-collection">
+                <label>Team</label>
+                <select class="teams" name="teamId">
+                  <% teams.forEach((team) => { %>
+                  <option value="<%= team._id %>">
+                    <%= team.teamNick %>
+                  </option>
+                  <% }) %>
+                  <option value="">Free Agent</option>
+                </select>
+              </div>
+
+              <div class="img-frame">
+                <label>Player Images</label>
+                <div class="media-frame">
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="player-image-section-1" />
+                    <span class="upload-hint">Main</span>
+                    <input
+                      type="file"
+                      name="playerImages"
+                      class="player-image-one"
+                      required
+                      onchange="previewPlayerImage(this, 1)"
+                    />
+                  </div>
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="player-image-section-2" />
+                    <input
+                      type="file"
+                      name="playerImages"
+                      class="player-image-two"
+                      onchange="previewPlayerImage(this, 2)"
+                    />
+                  </div>
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="player-image-section-3" />
+                    <input
+                      type="file"
+                      name="playerImages"
+                      class="player-image-three"
+                      onchange="previewPlayerImage(this, 3)"
+                    />
+                  </div>
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="player-image-section-4" />
+                    <input
+                      type="file"
+                      name="playerImages"
+                      class="player-image-four"
+                      onchange="previewPlayerImage(this, 4)"
+                    />
+                  </div>
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="player-image-section-5" />
+                    <input
+                      type="file"
+                      name="playerImages"
+                      class="player-image-five"
+                      onchange="previewPlayerImage(this, 5)"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="operation-buttons">
+                <button class="btn btn-outline" id="cancel-btn-bottom" type="button">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="create-btn">
+                  Create Player
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script type="text/javascript" src="/js/players.js"></script>
+</body>
+
+<%- include('includes/footer') %>

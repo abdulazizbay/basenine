@@ -18,12 +18,13 @@ const teamSchema = new Schema(
     },
     teamSubscribers: {
       type: Number,
-      default: 0
+      default: 0,
     },
     teamViews: {
       type: Number,
       default: 0,
     },
+    // team-status
   },
   { timestamps: true },
 );

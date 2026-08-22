@@ -1,17 +1,15 @@
 :root {
-  --bg: #10131a;
-  --bg-alt: #161a23;
-  --surface: #1b202b;
-  --surface-hover: #212734;
-  --field: #12151c;
-  --border: #2a3140;
-  --text: #eef1f6;
-  --text-muted: #8b93a3;
-  --accent: #e3c08d;
-  --accent-strong: #dd6d04;
-  --green: #3fbf7f;
-  --red: #e2554f;
-  --amber: #d9a441;
+  --bg: #f3f4f7;
+  --surface: #ffffff;
+  --surface-soft: #f7f8fa;
+  --border: #dde1e9;
+  --text: #1a2233;
+  --text-muted: #6b7280;
+  --navy: #1c2b4a;
+  --navy-deep: #121b30;
+  --red: #c8102e;
+  --red-deep: #9e0c24;
+  --slate: #5b6472;
 }
 
 * {
@@ -26,21 +24,24 @@
   flex-direction: column;
   align-items: center;
   background: var(--bg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  color: var(--text);
 }
 
 .users-container a {
   text-decoration: none;
 }
 
-/* Navbar (shared style with dashboard) */
+/* Navbar (shared style with products/dashboard) */
 .admin-navbar {
   position: sticky;
   top: 0;
   z-index: 100;
   width: 100%;
-  background: var(--bg-alt);
-  border-bottom: 1px solid var(--border);
+  background: var(--navy-deep);
+  border-bottom: 3px solid var(--red);
 }
 
 .admin-navbar-inner {
@@ -57,7 +58,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .brand-mark {
@@ -66,17 +67,18 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent-strong), #a34c02);
-  color: #fff;
-  font-weight: 700;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--navy-deep);
+  font-weight: 800;
   font-size: 13px;
-  letter-spacing: 0.5px;
+  border: 2px solid var(--red);
 }
 
 .brand-name {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 17px;
+  letter-spacing: 0.2px;
 }
 
 .nav-links {
@@ -93,30 +95,32 @@
   padding: 8px 14px;
   border-radius: 6px;
   font-size: 14px;
-  font-weight: 500;
-  color: var(--text-muted);
-  transition: background 0.15s ease, color 0.15s ease;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .nav-link:hover {
-  color: var(--text);
-  background: var(--surface-hover);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .nav-link.active {
-  color: var(--text);
-  background: var(--surface);
+  color: #ffffff;
+  background: var(--red);
 }
 
 .logout-link:hover {
-  color: var(--red);
+  color: #ff9d8f;
 }
 
 /* Content */
 .users-frame {
   position: relative;
   width: 100%;
-  padding: 48px 24px 64px;
+  padding: 44px 24px 64px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -131,16 +135,27 @@
 
 .page-header {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 6px;
 }
 
 .page-header h1 {
-  color: var(--text);
   font-size: 24px;
-  font-weight: 600;
-  margin: 0;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: var(--text);
 }
 
 .page-header p {
@@ -153,8 +168,9 @@
   width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(28, 43, 74, 0.05);
 }
 
 .table {
@@ -165,12 +181,12 @@
 .table thead th {
   text-align: left;
   padding: 14px 20px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--text-muted);
-  background: var(--bg-alt);
+  background: var(--surface-soft);
   border-bottom: 1px solid var(--border);
 }
 
@@ -186,7 +202,7 @@
 }
 
 .table tbody tr:hover td {
-  background: var(--surface-hover);
+  background: #f5f6fa;
 }
 
 .table th:first-child,
@@ -195,41 +211,48 @@
   color: var(--text-muted);
 }
 
+.cell-muted {
+  color: var(--text-muted);
+}
+
 .cell-name {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* Status select */
 .spec-select {
   padding: 6px 10px;
   height: 32px;
-  background: var(--field);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
   color: var(--text);
   cursor: pointer;
 }
 
 .spec-select:focus {
   outline: none;
-  border-color: var(--accent-strong);
+  border-color: var(--red);
 }
 
 .spec-select.status-active {
-  color: var(--green);
-  border-color: rgba(63, 191, 127, 0.35);
+  color: var(--navy);
+  border-color: #c4cce0;
+  background: #eef1f8;
 }
 
 .spec-select.status-block {
-  color: var(--amber);
-  border-color: rgba(217, 164, 65, 0.35);
+  color: var(--slate);
+  border-color: #d3d7e0;
+  background: #eef0f4;
 }
 
 .spec-select.status-delete {
   color: var(--red);
-  border-color: rgba(226, 85, 79, 0.35);
+  border-color: #eec0c8;
+  background: #fbecee;
 }
 
 /* Not-logged-in notice */
@@ -240,23 +263,24 @@
   padding: 40px 32px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(28, 43, 74, 0.05);
 }
 
 .auth-notice-tag {
   display: inline-block;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--red);
   margin-bottom: 14px;
 }
 
 .auth-notice h1 {
   color: var(--text);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 8px;
 }
 
@@ -268,19 +292,27 @@
 
 .btn {
   display: inline-block;
-  padding: 10px 22px;
-  border-radius: 8px;
+  padding: 11px 24px;
+  border-radius: 999px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
 }
 
 .btn-primary {
-  background: var(--accent-strong);
+  background: var(--red);
   color: #fff;
+  box-shadow: 0 6px 16px rgba(200, 16, 46, 0.25);
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  background: var(--red-deep);
 }
 
 @media (max-width: 640px) {

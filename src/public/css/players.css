@@ -9,15 +9,13 @@
   --navy-deep: #121b30;
   --red: #c8102e;
   --red-deep: #9e0c24;
-  --white: #ffffff;
-  --ok: #1c2b4a;
 }
 
 * {
   box-sizing: border-box;
 }
 
-.products-container {
+.players-container {
   position: relative;
   width: 100%;
   min-height: 100vh;
@@ -31,7 +29,7 @@
   color: var(--text);
 }
 
-.products-container a {
+.players-container a {
   text-decoration: none;
 }
 
@@ -79,7 +77,6 @@
 .brand-name {
   font-weight: 700;
   font-size: 17px;
-  letter-spacing: 0.2px;
 }
 
 .nav-links {
@@ -244,14 +241,14 @@
   color: var(--red);
 }
 
-/* ===== Product table ===== */
-.product-table-wrap {
+/* ===== Team table ===== */
+.player-table-wrap {
   width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(35, 40, 31, 0.05);
+  box-shadow: 0 10px 30px rgba(28, 43, 74, 0.05);
 }
 
 .table {
@@ -272,7 +269,7 @@
 }
 
 .table tbody td {
-  padding: 16px 20px;
+  padding: 12px 20px;
   font-size: 14px;
   color: var(--text);
   border-bottom: 1px solid var(--border);
@@ -300,9 +297,18 @@
   font-weight: 600;
 }
 
-.cell-price {
+.player-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+}
+
+.cell-jersey {
   font-weight: 700;
-  color: var(--navy-deep);
+  color: var(--red);
 }
 
 .type-pill {
@@ -316,44 +322,8 @@
   letter-spacing: 0.3px;
 }
 
-/* Status select */
-.spec-select {
-  padding: 6px 10px;
-  height: 32px;
-  background: #fff;
-  border: 1.5px solid var(--border);
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--text);
-  cursor: pointer;
-}
-
-.spec-select:focus {
-  outline: none;
-  border-color: var(--red);
-}
-
-.spec-select.status-process {
-  color: var(--navy);
-  border-color: #c4cce0;
-  background: #eef1f8;
-}
-
-.spec-select.status-pause {
-  color: #5b6472;
-  border-color: #d3d7e0;
-  background: #eef0f4;
-}
-
-.spec-select.status-delete {
-  color: var(--red);
-  border-color: #eec0c8;
-  background: #fbecee;
-}
-
 /* ===== Create form ===== */
-.dish-container {
+.player-form {
   width: 100%;
 }
 
@@ -363,7 +333,7 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 32px;
-  box-shadow: 0 10px 30px rgba(35, 40, 31, 0.05);
+  box-shadow: 0 10px 30px rgba(28, 43, 74, 0.05);
 }
 
 .long-input {
@@ -379,15 +349,13 @@
 }
 
 .long-input label,
-.half-input label,
 .img-frame label {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.long-input input,
-.half-input input {
+.long-input input {
   position: relative;
   margin-top: 8px;
   padding-left: 16px;
@@ -403,34 +371,6 @@
     background 0.15s ease;
 }
 
-.long-input textarea {
-  position: relative;
-  margin-top: 8px;
-  padding: 16px;
-  width: 100%;
-  height: 140px;
-  border: 1.5px solid var(--border);
-  background: var(--surface-soft);
-  border-radius: 10px;
-  font-size: 14px;
-  color: var(--text);
-  resize: vertical;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
-}
-
-.long-input input:focus,
-.half-input input:focus,
-.long-input textarea:focus,
-.half-input select:focus,
-.long-input select:focus {
-  outline: none;
-  border-color: var(--red);
-  background: #fff;
-}
-
-.half-input select,
 .long-input select {
   position: relative;
   margin-top: 8px;
@@ -443,6 +383,13 @@
   border-radius: 10px;
   font-size: 14px;
   color: var(--text);
+}
+
+.long-input input:focus,
+.long-input select:focus {
+  outline: none;
+  border-color: var(--red);
+  background: #fff;
 }
 
 .half-input-frame {
@@ -459,6 +406,55 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.half-input label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.half-input input,
+.half-input select {
+  position: relative;
+  margin-top: 8px;
+  padding: 0 16px;
+  width: 100%;
+  height: 48px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-soft);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--text);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.half-input input {
+  padding-left: 16px;
+}
+
+.half-input input:focus,
+.half-input select:focus {
+  outline: none;
+  border-color: var(--red);
+  background: #fff;
+}
+
+input[type="date"],
+input[type="number"] {
+  font-family: inherit;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 0.6;
 }
 
 /* Image uploads */
@@ -520,7 +516,7 @@
   color: var(--text-muted);
 }
 
-.products-container #file {
+.players-container .media-frame input[type="file"] {
   opacity: 0;
   border: none;
   border-radius: 12px;
@@ -552,9 +548,6 @@
     flex-wrap: wrap;
   }
   .page-header {
-    flex-direction: column;
-  }
-  .half-input-frame {
     flex-direction: column;
   }
   .media-frame {

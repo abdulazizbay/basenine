@@ -1,13 +1,15 @@
 :root {
-  --bg: #10131a;
-  --bg-alt: #161a23;
-  --surface: #1b202b;
-  --surface-hover: #212734;
-  --border: #2a3140;
-  --text: #eef1f6;
-  --text-muted: #8b93a3;
-  --accent: #e3c08d;
-  --accent-strong: #dd6d04;
+  --bg: #f3f4f7;
+  --surface: #ffffff;
+  --surface-soft: #f7f8fa;
+  --surface-hover: #f5f6fa;
+  --border: #dde1e9;
+  --text: #1a2233;
+  --text-muted: #6b7280;
+  --navy: #1c2b4a;
+  --navy-deep: #121b30;
+  --red: #c8102e;
+  --red-deep: #9e0c24;
 }
 
 * {
@@ -21,7 +23,10 @@
   display: flex;
   flex-direction: column;
   background: var(--bg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  color: var(--text);
 }
 
 .home-container a {
@@ -33,8 +38,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-alt);
-  border-bottom: 1px solid var(--border);
+  background: var(--navy-deep);
+  border-bottom: 3px solid var(--red);
 }
 
 .admin-navbar-inner {
@@ -51,7 +56,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--text);
+  color: #ffffff;
 }
 
 .brand-mark {
@@ -60,16 +65,16 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent-strong), #a34c02);
-  color: #fff;
-  font-weight: 700;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--navy-deep);
+  font-weight: 800;
   font-size: 13px;
-  letter-spacing: 0.5px;
+  border: 2px solid var(--red);
 }
 
 .brand-name {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 17px;
   letter-spacing: 0.2px;
 }
@@ -88,23 +93,25 @@
   padding: 8px 14px;
   border-radius: 6px;
   font-size: 14px;
-  font-weight: 500;
-  color: var(--text-muted);
-  transition: background 0.15s ease, color 0.15s ease;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .nav-link:hover {
-  color: var(--text);
-  background: var(--surface-hover);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .nav-link.active {
-  color: var(--text);
-  background: var(--surface);
+  color: #ffffff;
+  background: var(--red);
 }
 
 .logout-link:hover {
-  color: #e2554f;
+  color: #ff9d8f;
 }
 
 /* Main */
@@ -113,13 +120,23 @@
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 48px 24px 64px;
+  padding: 44px 24px 64px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 6px;
 }
 
 .dashboard-header h1 {
   color: var(--text);
   font-size: 26px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 6px;
 }
 
@@ -142,14 +159,21 @@
   padding: 22px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(28, 43, 74, 0.05);
   opacity: 0;
   transform: translateY(10px);
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .dash-card:hover {
   background: var(--surface-hover);
-  border-color: #3a4356;
+  border-color: var(--red);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(200, 16, 46, 0.12);
 }
 
 .dash-card-icon {
@@ -160,8 +184,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(221, 109, 4, 0.12);
-  color: var(--accent);
+  background: #eef1f8;
+  color: var(--navy);
 }
 
 .dash-card-icon svg {
@@ -172,7 +196,7 @@
 .dash-card-body h3 {
   color: var(--text);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 4px;
 }
 
@@ -190,7 +214,8 @@
   padding: 40px 32px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(28, 43, 74, 0.05);
   opacity: 0;
   transform: translateY(10px);
 }
@@ -198,17 +223,17 @@
 .welcome-tag {
   display: inline-block;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--red);
   margin-bottom: 14px;
 }
 
 .welcome-panel h1 {
   color: var(--text);
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 10px;
 }
 
@@ -225,29 +250,38 @@
 }
 
 .btn {
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 11px 22px;
+  border-radius: 999px;
   font-size: 14px;
-  font-weight: 600;
-  transition: opacity 0.15s ease, background 0.15s ease;
+  font-weight: 700;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease,
+    background 0.12s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
 }
 
 .btn-primary {
-  background: var(--accent-strong);
+  background: var(--red);
   color: #fff;
+  box-shadow: 0 6px 16px rgba(200, 16, 46, 0.25);
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  background: var(--red-deep);
 }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
+  border: 1.5px solid var(--border);
+  color: var(--navy);
 }
 
 .btn-outline:hover {
+  border-color: var(--navy);
   background: var(--surface-hover);
 }
 

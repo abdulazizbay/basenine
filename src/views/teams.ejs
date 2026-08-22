@@ -1,0 +1,193 @@
+<%- include('includes/header') %>
+
+<link rel="stylesheet" type="text/css" href="/css/teams.css" />
+
+<body>
+  <div class="team-container">
+
+    <nav class="admin-navbar">
+      <div class="admin-navbar-inner">
+        <a class="brand" href="/admin/">
+          <span class="brand-mark">B9</span>
+          <span class="brand-name">BaseNine</span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a class="nav-link" href="/admin/">Home</a></li>
+          <li><a class="nav-link" href="/admin/user/all">Users</a></li>
+          <li><a class="nav-link" href="/admin/player/all">Players</a></li>
+          <li><a class="nav-link active" href="/admin/team/all">Teams</a></li>
+          <li><a class="nav-link" href="/admin/game/all">Games</a></li>
+          <li><a class="nav-link" href="/admin/product/all">Products</a></li>
+  
+          <li>
+            <a
+              class="nav-link logout-link"
+              href="/admin/logout"
+              onclick="return confirm('Do you want to logout?')"
+            >Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="menu-frame">
+      <div class="board">
+
+        <!-- ===== LIST VIEW ===== -->
+        <section class="view view-list active" id="teamListView">
+          <div class="page-header">
+            <div>
+              <span class="eyebrow">Roster</span>
+              <h1>Teams</h1>
+              <p><%= teams.length %> team<%= teams.length === 1 ? '' : 's' %> registered</p>
+            </div>
+            <button class="btn btn-primary" id="process-btn" type="button">
+              <span class="btn-plus">+</span> New Team
+            </button>
+          </div>
+
+          <div class="team-table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Team</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Subscribers</th>
+                  <th scope="col">Views</th>
+                  <th scope="col">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!--  LOOP TEAMS: START  -->
+                <% teams.map(function(value, key){ %>
+                <tr>
+                  <td class="cell-muted"><%= key + 1 %></td>
+                  <td class="cell-name"><%= value.teamNick %></td>
+                  <td><span class="type-pill"><%= value.teamAddress %></span></td>
+                  <td><%= value.teamSubscribers %></td>
+                  <td><%= value.teamViews %></td>
+                  <td class="cell-muted"><%= new Date(value.createdAt).toLocaleDateString() %></td>
+                </tr>
+                <% }) %>
+                <!--  LOOP TEAMS: END  -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== CREATE VIEW ===== -->
+        <section class="view view-form" id="teamFormView">
+          <form
+            onsubmit="return validateTeamForm()"
+            action="/admin/team/create"
+            method="POST"
+            class="team-form"
+            enctype="multipart/form-data"
+          >
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">New Team</span>
+                <h1>Team Detail</h1>
+                <p>Fill in the details below to register a new team.</p>
+              </div>
+              <button class="btn btn-ghost" id="cancel-btn" type="button">&larr; Back to teams</button>
+            </div>
+
+            <div class="form-card">
+              <div class="long-input">
+                <label>Team Name</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Seoul Sluggers"
+                  name="teamNick"
+                  class="team-nick"
+                />
+              </div>
+
+              <div class="long-input">
+                <label>Team Address</label>
+                <select class="team-address" name="teamAddress">
+                  <option value="SEOUL">SEOUL</option>
+                  <option value="BUSAN">BUSAN</option>
+                  <option value="DAEGU">DAEGU</option>
+                  <option value="INCHEON">INCHEON</option>
+                  <option value="GWANGJU">GWANGJU</option>
+                  <option value="DAEJEON">DAEJEON</option>
+                  <option value="SUWON">SUWON</option>
+                  <option value="CHANGWON">CHANGWON</option>
+                </select>
+              </div>
+
+              <div class="img-frame">
+                <label>Team Images</label>
+                <div class="media-frame">
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="team-image-section-1" />
+                    <span class="upload-hint">Main</span>
+                    <input
+                      type="file"
+                      name="teamImage"
+                      class="team-image-one"
+                      required
+                      onchange="previewTeamImage(this, 1)"
+                    />
+                  </div>
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="team-image-section-2" />
+                    <input
+                      type="file"
+                      name="teamImage"
+                      class="team-image-two"
+                      onchange="previewTeamImage(this, 2)"
+                    />
+                  </div>
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="team-image-section-3" />
+                    <input
+                      type="file"
+                      name="teamImage"
+                      class="team-image-three"
+                      onchange="previewTeamImage(this, 3)"
+                    />
+                  </div>
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="team-image-section-4" />
+                    <input
+                      type="file"
+                      name="teamImage"
+                      class="team-image-four"
+                      onchange="previewTeamImage(this, 4)"
+                    />
+                  </div>
+                  <div class="upload-img-box">
+                    <img src="/img/upload.svg" id="team-image-section-5" />
+                    <input
+                      type="file"
+                      name="teamImage"
+                      class="team-image-five"
+                      onchange="previewTeamImage(this, 5)"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="operation-buttons">
+                <button class="btn btn-outline" id="cancel-btn-bottom" type="button">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="create-btn">
+                  Create Team
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script type="text/javascript" src="/js/teams.js"></script>
+</body>
+
+<%- include('includes/footer') %>

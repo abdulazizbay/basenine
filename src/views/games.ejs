@@ -1,0 +1,167 @@
+<%- include('includes/header') %>
+
+<link rel="stylesheet" type="text/css" href="/css/games.css" />
+
+<body>
+  <div class="games-container">
+
+    <nav class="admin-navbar">
+      <div class="admin-navbar-inner">
+        <a class="brand" href="/admin/">
+          <span class="brand-mark">B9</span>
+          <span class="brand-name">BaseNine</span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a class="nav-link" href="/admin/">Home</a></li>
+          <li><a class="nav-link" href="/admin/user/all">Users</a></li>
+          <li><a class="nav-link" href="/admin/player/all">Players</a></li>
+          <li><a class="nav-link" href="/admin/team/all">Teams</a></li>
+          <li><a class="nav-link active" href="/admin/game/all">Games</a></li>
+          <li><a class="nav-link" href="/admin/product/all">Products</a></li>
+        
+          <li>
+            <a
+              class="nav-link logout-link"
+              href="/admin/logout"
+              onclick="return confirm('Do you want to logout?')"
+            >Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="menu-frame">
+      <div class="board">
+
+        <!-- ===== LIST VIEW ===== -->
+        <section class="view view-list active" id="gameListView">
+          <div class="page-header">
+            <div>
+              <span class="eyebrow">Schedule</span>
+              <h1>Games</h1>
+              <p><%= games.length %> game<%= games.length === 1 ? '' : 's' %> scheduled</p>
+            </div>
+            <button class="btn btn-primary" id="process-btn" type="button">
+              <span class="btn-plus">+</span> New Game
+            </button>
+          </div>
+
+          <div class="game-table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">No</th>
+                  <th scope="col">Matchup</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Address</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!--  LOOP GAMES: START  -->
+                <% games.map(function(value, key){ %>
+                <tr>
+                  <td class="cell-muted"><%= key + 1 %></td>
+                  <td class="cell-matchup">
+                    <span class="team-name"><%= value.teamAId && value.teamAId.teamNick ? value.teamAId.teamNick : "TBD" %></span>
+                    <span class="vs">vs</span>
+                    <span class="team-name"><%= value.teamBId && value.teamBId.teamNick ? value.teamBId.teamNick : "TBD" %></span>
+                  </td>
+                  <td><%= new Date(value.gameDate).toLocaleString() %></td>
+                  <td><span class="type-pill"><%= value.gameAddress || "-" %></span></td>
+                  <td>
+                    <select class="spec-select game-status status-<%= value.gameStatus.toLowerCase() %>" id="<%= value._id %>">
+                      <option value="UPCOMING" <%= value.gameStatus === "UPCOMING" ? "selected" : "" %>>UPCOMING</option>
+                      <option value="PROCESS" <%= value.gameStatus === "PROCESS" ? "selected" : "" %>>PROCESS</option>
+                      <option value="FINISHED" <%= value.gameStatus === "FINISHED" ? "selected" : "" %>>FINISHED</option>
+                    </select>
+                  </td>
+                </tr>
+                <% }) %>
+                <!--  LOOP GAMES: END  -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ===== CREATE VIEW ===== -->
+        <section class="view view-form" id="gameFormView">
+          <form
+            onsubmit="return validateGameForm()"
+            action="/admin/game/create"
+            method="POST"
+            class="game-form"
+          >
+            <div class="page-header">
+              <div>
+                <span class="eyebrow">New Game</span>
+                <h1>Game Detail</h1>
+                <p>Schedule a matchup between two teams.</p>
+              </div>
+              <button class="btn btn-ghost" id="cancel-btn" type="button">&larr; Back to games</button>
+            </div>
+
+            <div class="form-card">
+              <div class="half-input-frame">
+                <div class="half-input">
+                  <label>Team A</label>
+                  <select class="team-a" name="teamAId">
+                    <% teams.forEach((team) => { %>
+                    <option value="<%= team._id %>"><%= team.teamNick %></option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div class="half-input">
+                  <label>Team B</label>
+                  <select class="team-b" name="teamBId">
+                    <% teams.forEach((team) => { %>
+                    <option value="<%= team._id %>"><%= team.teamNick %></option>
+                    <% }) %>
+                  </select>
+                </div>
+              </div>
+
+              <div class="half-input-frame">
+                <div class="half-input">
+                  <label>Game Date &amp; Time</label>
+                  <input
+                    type="datetime-local"
+                    name="gameDate"
+                    class="game-date"
+                  />
+                </div>
+                <div class="half-input">
+                  <label>Address</label>
+                  <select class="game-address" name="gameAddress">
+                    <option value="SEOUL">SEOUL</option>
+                    <option value="BUSAN">BUSAN</option>
+                    <option value="INCHEON">INCHEON</option>
+                    <option value="DAEGU">DAEGU</option>
+                    <option value="DAEJEON">DAEJEON</option>
+                    <option value="GWANGJU">GWANGJU</option>
+                    <option value="ULSAN">ULSAN</option>
+                    <option value="SEJONG">SEJONG</option>
+                    <option value="SUWON">SUWON</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="operation-buttons">
+                <button class="btn btn-outline" id="cancel-btn-bottom" type="button">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="create-btn">
+                  Create Game
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script type="text/javascript" src="/js/games.js"></script>
+</body>
+
+<%- include('includes/footer') %>

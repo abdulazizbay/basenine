@@ -18,6 +18,7 @@ const GameSchema = new Schema(
     gameStatus: {
       type: String,
       enum: GameStatus,
+      default: GameStatus.UPCOMING
     },
   },
   { timestamps: true },

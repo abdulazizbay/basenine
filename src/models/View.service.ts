@@ -13,6 +13,7 @@ class ViewService {
       .findOne({
         memberId: input.memberId,
         viewRefId: input.viewRefId,
+        viewGroup: input.viewGroup,
       })
       .exec();
   }

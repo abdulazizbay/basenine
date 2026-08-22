@@ -7,4 +7,5 @@ export enum Address {
   GWANGJU = "GWANGJU",
   ULSAN = "ULSAN",
   SEJONG = "SEJONG",
+  SUWON = "SUWON"
 }

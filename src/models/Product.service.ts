@@ -13,10 +13,12 @@ import { ObjectId } from "mongoose";
 import ViewService from "./View.service";
 import { ViewInput } from "../libs/types/view";
 import { ViewGroup } from "../libs/enums/view.enum";
+import TeamService from "./Team.service";
 
 class ProductService {
   private readonly productModel;
   public viewService;
+  
 
   constructor() {
     this.productModel = ProductModel;
@@ -89,7 +91,7 @@ class ProductService {
   /**  SSR */
 
   public async getAllProducts(): Promise<Product[]> {
-    const result = await this.productModel.find().exec();
+    const result = await this.productModel.find().populate("teamId").lean<Product[]>().exec();
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
     return result;
   }
