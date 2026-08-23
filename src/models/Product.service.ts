@@ -6,6 +6,7 @@ import {
   Product,
   ProductInput,
   ProductInquiry,
+  Products,
   ProductUpdateInput,
 } from "../libs/types/product";
 import ProductModel from "../schema/Product.model";
@@ -18,7 +19,6 @@ import TeamService from "./Team.service";
 class ProductService {
   private readonly productModel;
   public viewService;
-  
 
   constructor() {
     this.productModel = ProductModel;
@@ -26,30 +26,51 @@ class ProductService {
   }
 
   /**  SPA */
+  // initially pass to frontend the teams to choose from
+  // filter by collection,
+  // add search
+  public async getProducts(inquiry: ProductInquiry): Promise<Products> {
+  const match: T = { productStatus: ProductStatus.PROCESS };
 
-  public async getProducts(inquiry: ProductInquiry): Promise<Product[]> {
-    const match: T = { productStatus: ProductStatus.PROCESS };
-    if (inquiry.productCollection) {
-      match.productCollection = inquiry.productCollection;
-    }
-    if (inquiry.search) {
-      match.productName = { $regex: new RegExp(inquiry.search, "i") };
-    }
-    const sort: T =
-      inquiry.order === "productPrice"
-        ? { [inquiry.order]: 1 }
-        : { [inquiry.order]: -1 };
-    const result = await this.productModel
-      .aggregate([
-        { $match: match },
-        { $sort: sort },
-        { $skip: (inquiry.page * 1 - 1) * inquiry.limit },
-        { $limit: inquiry.limit * 1 },
-      ])
-      .exec();
-    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
-    return result;
-  }
+  if (inquiry.productCollection) match.productCollection = inquiry.productCollection;
+  if (inquiry.teamId) match.teamId = shapeIntoMongooseObjectId(inquiry.teamId);
+  if (inquiry.search) match.productName = { $regex: new RegExp(inquiry.search, "i") };
+
+  const sort: T = { [inquiry.order]: inquiry.direction };
+
+  const result = await this.productModel
+    .aggregate([
+      { $match: match },
+      {
+        $facet: {
+          list: [
+            { $sort: sort },
+            { $skip: (inquiry.page - 1) * inquiry.limit },
+            { $limit: inquiry.limit },
+            {
+              $lookup: {
+                from: "teams",
+                localField: "teamId",
+                foreignField: "_id",
+                as: "teamId",
+              },
+            },
+            {
+              $unwind: {
+                path: "$teamId",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+          ],
+          metaCounter: [{ $count: "total" }],
+        },
+      },
+    ])
+    .exec();
+
+  if (!result.length) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+  return result[0];
+}
 
   public async getProduct(
     memberId: ObjectId | null,
@@ -61,6 +82,7 @@ class ProductService {
         _id: productId,
         productStatus: ProductStatus.PROCESS,
       })
+      .populate("teamId")
       .exec();
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
 
@@ -82,6 +104,7 @@ class ProductService {
             { $inc: { productViews: +1 } },
             { new: true },
           )
+          .populate("teamId")
           .exec();
       }
     }
@@ -91,7 +114,11 @@ class ProductService {
   /**  SSR */
 
   public async getAllProducts(): Promise<Product[]> {
-    const result = await this.productModel.find().populate("teamId").lean<Product[]>().exec();
+    const result = await this.productModel
+      .find()
+      .populate("teamId")
+      .lean<Product[]>()
+      .exec();
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
     return result;
   }

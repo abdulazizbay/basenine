@@ -1,6 +1,7 @@
-import { ProductCollection, ProductStatus } from "../enums/product.enum";
+import { ProductCollection, ProductOrder, ProductStatus } from "../enums/product.enum";
 import { ObjectId } from "mongoose";
 import { Team } from "./team";
+import { Direction } from "./common";
 
 export interface Product {
   _id: ObjectId;
@@ -17,13 +18,7 @@ export interface Product {
   updatedAt: Date;
 }
 
-export interface ProductInquiry {
-  order: string;
-  page: number;
-  limit: number;
-  productCollection?: ProductCollection;
-  search?: string;
-}
+
 
 export interface ProductInput {
   productStatus?: ProductStatus;
@@ -48,3 +43,19 @@ export interface ProductUpdateInput {
   productImages: string[];
   productViews: string[];
 }
+
+export interface ProductInquiry {
+  order: ProductOrder;
+  direction: Direction; 
+  page: number;
+  limit: number;
+  productCollection?: ProductCollection;
+  teamId?: ObjectId;
+  search?: string;
+}
+
+export interface Products {
+  list: Product[];
+  metaCounter: { total: number }[];
+}
+

@@ -1,11 +1,12 @@
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { T } from "../libs/types/common";
+import { Direction, T } from "../libs/types/common";
 import { Request, Response } from "express";
 import ProductService from "../models/Product.service";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { ProductInput, ProductInquiry } from "../libs/types/product";
-import { ProductCollection } from "../libs/enums/product.enum";
+import { ProductCollection, ProductOrder } from "../libs/enums/product.enum";
 import TeamService from "../models/Team.service";
+import { shapeIntoMongooseObjectId } from "../libs/config";
 
 const productService = new ProductService();
 const teamService = new TeamService();
@@ -13,37 +14,41 @@ const teamService = new TeamService();
 const productController: T = {};
 
 // /**  SPA */
-// productController.getProducts = async (req: Request, res: Response) => {
-//   try {
-//     const { page, limit, order, productCollection, search } = req.query;
-//     const inquiry: ProductInquiry = {
-//       order: String(order),
-//       page: Number(page),
-//       limit: Number(limit),
-//     };
-//     if (productCollection)
-//       inquiry.productCollection = productCollection as ProductCollection;
-//     if (search) inquiry.search = String(search);
-//     const result = await productService.getProducts(inquiry);
-//     res.status(HttpCode.OK).json({ result });
-//   } catch (err) {
-//     if (err instanceof Errors) res.status(err.code).json(err);
-//     else res.status(Errors.standard.code).json(Errors.standard);
-//   }
-// };
+  // initially pass to frontend the teams to choose from
+productController.getProducts = async (req: Request, res: Response) => {
+  try {
+    const { page, limit, order, direction, productCollection, teamId, search } = req.query;
 
-// productController.getProduct = async (req: ExtendedRequest, res: Response) => {
-//   try {
-//     const { id } = req.params;
-//     const memberId = req.member?._id ?? null;
-//     const result = await productService.getProduct(memberId, id as string);
+    const inquiry: ProductInquiry = {
+      order: order as ProductOrder,
+      direction: Number(direction) as Direction,
+      page: Number(page) || 1,
+      limit: Number(limit) || 20,
+    };
+    if (productCollection) inquiry.productCollection = productCollection as ProductCollection;
+    if (teamId) inquiry.teamId = shapeIntoMongooseObjectId(teamId as string);
+    if (search) inquiry.search = String(search);
 
-//     res.status(HttpCode.OK).json({ result: result });
-//   } catch (err) {
-//     if (err instanceof Errors) res.status(err.code).json(err);
-//     else res.status(Errors.standard.code).json(Errors.standard);
-//   }
-// };
+    const result = await productService.getProducts(inquiry);
+    res.status(HttpCode.OK).json(result);
+  } catch (err) {
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
+
+productController.getProduct = async (req: ExtendedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const memberId = req.member?._id ?? null;
+    const result = await productService.getProduct(memberId, id as string);
+
+    res.status(HttpCode.OK).json({ result: result });
+  } catch (err) {
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
 
 /**  SSR */
 productController.getAllProducts = async (req: AdminRequest, res: Response) => {
