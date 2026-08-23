@@ -15,6 +15,7 @@ import ViewService from "./View.service";
 import { ViewInput } from "../libs/types/view";
 import { ViewGroup } from "../libs/enums/view.enum";
 import TeamService from "./Team.service";
+import { OrderitemInput } from "../libs/types/order";
 
 class ProductService {
   private readonly productModel;
@@ -110,6 +111,22 @@ class ProductService {
     }
     return result;
   }
+  // used in order
+  public async deductStock(input: OrderitemInput[]): Promise<void> {
+  const promisedList = input.map(async (item: OrderitemInput) => {
+    const productId = shapeIntoMongooseObjectId(item.productId);
+    const result = await this.productModel
+      .updateOne(
+        { _id: productId, productLeftCount: { $gte: item.itemQuantity } },
+        { $inc: { productLeftCount: -item.itemQuantity } },
+      )
+      .exec();
+    if (result.matchedCount === 0) {
+      throw new Errors(HttpCode.BAD_REQUEST, Message.SOMETHING_WENT_WRONG); // not enough stock
+    }
+  });
+  await Promise.all(promisedList);
+}
 
   /**  SSR */
 
