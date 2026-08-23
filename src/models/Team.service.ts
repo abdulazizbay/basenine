@@ -7,7 +7,6 @@ import {
   Team,
   TeamInput,
   TeamInquiry,
-  
   Teams,
   TeamUpdateInput,
 } from "../libs/types/team";
@@ -56,6 +55,15 @@ class TeamService {
     if (!result.length)
       throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
     return result[0];
+  }
+
+  public async getTeamOptions(): Promise<Pick<Team, "_id" | "teamNick">[]> {
+    return await this.teamModel
+      .find({})
+      .select("teamNick")
+      .sort({ teamNick: 1 })
+      .lean<Pick<Team, "_id" | "teamNick">[]>()
+      .exec();
   }
 
   public async getTeam(memberId: ObjectId | null, id: string): Promise<Team> {

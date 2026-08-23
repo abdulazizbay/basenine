@@ -33,6 +33,7 @@ router.post(
 
 // Team
 router.get("/team/all", teamController.getTeams);
+router.get("/team/options", teamController.getTeamOptions);
 router.get("/team/:id", memberController.retrieveAuth, teamController.getTeam)
 router.get("/team/:id/subscribers", teamController.getTeamSubscribers);
 router.get(
@@ -59,8 +60,8 @@ router.get("/game/:id", gameController.getGame)
 router.get("/product/all", productController.getProducts);
 router.get("/product/:id", memberController.retrieveAuth, productController.getProduct)
 
-// // Order
-// router.post("/order/create", memberController.verifyAuth, orderController.createOrder)
+// Order
+router.post("/order/create", memberController.verifyAuth, orderController.createOrder)
 // router.get("/order/all", memberController.verifyAuth, orderController.getMyOrders)
 // router.post("/order/update", memberController.verifyAuth, orderController.updateOrder)
 export default router;
