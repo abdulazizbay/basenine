@@ -1,4 +1,4 @@
-import { PlayerPosition } from "../enums/player.enum";
+import { PlayerOrder, PlayerPosition } from "../enums/player.enum";
 import { ObjectId } from "mongoose";
 import { Team } from "./team";
 import { Direction } from "./common";
@@ -38,9 +38,6 @@ export interface PlayerInquiry {
   search?: string;
 }
 
-export enum PlayerOrder {
-  CREATED_AT = "createdAt",
-  VIEWS = "playerViews",
-}
+
 
 

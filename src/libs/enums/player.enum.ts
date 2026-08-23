@@ -9,3 +9,7 @@ export enum PlayerPosition {
   CENTERFIELDER = "CENTERFIELDER",
   RIGHTFIELDER = "RIGHTFIELDER",
 }
+export enum PlayerOrder {
+  CREATED_AT = "createdAt",
+  VIEWS = "playerViews",
+}

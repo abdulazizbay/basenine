@@ -12,7 +12,7 @@ export interface Member {
   memberImage?: string;
   memberStatus: MemberStatus;
   memberPhone: string;
-  memberAdress?: string;
+  memberAddress?: Address;
   memberDesc?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -24,7 +24,7 @@ export interface MemberInput {
   memberStatus?: MemberStatus;
   memberImage?: string;
   memberPhone: string;
-  memberAdress?: Address;
+  memberAddress?: Address;
   memberDesc?: string;
 }
 
@@ -41,7 +41,7 @@ export interface MemberUpdateInput {
   memberType?: MemberType;
   memberStatus?: MemberStatus;
   memberDesc?: string;
-  memberAdress?: string;
+  memberAddress?: Address;
   memberImage?: string;
 }
 

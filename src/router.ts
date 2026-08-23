@@ -5,6 +5,7 @@ import productController from "./controllers/product.controller";
 import orderController from "./controllers/order.controller";
 import teamController from "./controllers/team.controller";
 import playerController from "./controllers/player.controller";
+import gameController from "./controllers/game.controller";
 
 const router = express.Router();
 
@@ -44,9 +45,13 @@ router.get(
   memberController.verifyAuth, 
   teamController.unsubscribeTeam,
 );
-
+// Player
 router.get("/player/all", playerController.getPlayers);
 router.get("/player/:id", memberController.retrieveAuth, playerController.getPlayer)
+
+// Game
+router.get("/game/all", memberController.retrieveAuth, gameController.getGames);
+router.get("/game/:id", gameController.getGame)
 
 // router.get("/member/top-users", memberController.getTopUsers);
 

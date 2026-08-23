@@ -2,6 +2,7 @@ import { ObjectId } from "mongoose";
 import { Team } from "./team";
 import { Address } from "../enums/common.enum";
 import { GameStatus } from "../enums/game.enum";
+import { Direction } from "./common";
 export interface Game {
   _id: ObjectId;
   teamAId: ObjectId | Team;
@@ -11,6 +12,10 @@ export interface Game {
   gameStatus: GameStatus;
   createdAt: Date;
   updatedAt: Date;
+}
+export interface Games {
+  list: Game[];
+  metaCounter: { total: number }[];
 }
 
 export interface GameInput {
@@ -22,4 +27,13 @@ export interface GameInput {
 export interface GameInputUpdate {
   _id: ObjectId;
   gameStatus: GameStatus;
+}
+export interface GameInquiry {
+  page: number;
+  limit: number;
+  gameAddress?: Address;
+  gameStatus?: GameStatus;
+  startDate?: Date;
+  endDate?: Date;
+  memberAddress?: Address;
 }

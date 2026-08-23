@@ -1,6 +1,7 @@
 import { ObjectId } from "mongoose";
 import { Address } from "../enums/common.enum";
 import { Direction } from "./common";
+import { TeamOrder } from "../enums/team.enum";
 export interface Team {
   _id?: ObjectId;
   teamNick: string;
@@ -40,9 +41,4 @@ export interface TeamInquiry {
   search?: string;
 }
 
-export enum TeamOrder {
-  CREATED_AT = "createdAt",
-  SUBSCRIBERS = "teamSubscribers",
-  VIEWS = "teamViews",
-}
 

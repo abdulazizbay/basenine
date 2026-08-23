@@ -7,7 +7,7 @@ import {
   Team,
   TeamInput,
   TeamInquiry,
-  TeamOrder,
+  
   Teams,
   TeamUpdateInput,
 } from "../libs/types/team";

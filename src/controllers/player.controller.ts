@@ -1,10 +1,11 @@
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { Direction, T } from "../libs/types/common";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
-import { PlayerInput, PlayerInquiry, PlayerOrder } from "../libs/types/player";
+import { PlayerInput, PlayerInquiry } from "../libs/types/player";
 import PlayerService from "../models/Player.service";
 import { Response, Request } from "express";
 import TeamService from "../models/Team.service";
+import { PlayerOrder } from "../libs/enums/player.enum";
 
 const playerService = new PlayerService();
 const teamService = new TeamService();

@@ -1,16 +1,65 @@
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { T } from "../libs/types/common";
-import { GameInput } from "../libs/types/game";
-import { AdminRequest } from "../libs/types/member";
+import { Direction, T } from "../libs/types/common";
+import { GameInput, GameInquiry } from "../libs/types/game";
+import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { Response, Request } from "express";
 import GameService from "../models/Game.service";
 import TeamService from "../models/Team.service";
 import { GameStatus } from "../libs/enums/game.enum";
+import { Address } from "../libs/enums/common.enum";
 
-const gameService = new GameService;
-const teamService = new TeamService
+const gameService = new GameService();
+const teamService = new TeamService();
 
 const gameController: T = {};
+
+// SPA
+gameController.getGames = async (req: ExtendedRequest, res: Response) => {
+  try {
+    const { page, limit, gameAddress, gameStatus, startDate, endDate } = req.query;
+
+    const inquiry: GameInquiry = {
+      page: Number(page) || 1,
+      limit: Number(limit) || 20,
+    };
+
+    if (gameAddress) inquiry.gameAddress = gameAddress as Address;
+    if (gameStatus) inquiry.gameStatus = gameStatus as GameStatus;
+    if (startDate) inquiry.startDate = new Date(startDate as string);
+    if (endDate) inquiry.endDate = new Date(endDate as string);
+    if (req.member?.memberAddress) inquiry.memberAddress = req.member.memberAddress ;
+
+    const result = await gameService.getGames(inquiry);
+    res.json(result);
+  } catch (err) {
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
+
+gameController.getGame = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await gameService.getGame(String(id));
+    res.json(result);
+  } catch (err) {
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
+
+// playerController.getPlayer = async (req: ExtendedRequest, res: Response) => {
+//   try {
+//     const { id } = req.params;
+//     const memberId = req.member?._id ?? null;
+//     const result = await playerService.getPlayer(memberId, id as string);
+
+//     res.status(HttpCode.OK).json({ result });
+//   } catch (err) {
+//     if (err instanceof Errors) res.status(err.code).json(err);
+//     else res.status(Errors.standard.code).json(Errors.standard);
+//   }
+// };
 
 // /**  SSR */
 gameController.createNewGame = async (req: AdminRequest, res: Response) => {
@@ -38,7 +87,7 @@ gameController.getAllGames = async (req: AdminRequest, res: Response) => {
       teamService.getAllTeams(),
     ]);
     console.log(games);
-    
+
     res.render("games", { games, teams });
   } catch (err) {
     console.log("Error, getAllGames", err);
@@ -50,7 +99,7 @@ gameController.getAllGames = async (req: AdminRequest, res: Response) => {
 gameController.updateChosenGame = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const {gameStatus} = req.body
+    const { gameStatus } = req.body;
     const result = await gameService.updateChosenGame(id, gameStatus);
     res.status(HttpCode.OK).json({ data: result });
   } catch (err) {
@@ -59,6 +108,5 @@ gameController.updateChosenGame = async (req: Request, res: Response) => {
     else res.status(Errors.standard.code).json(Errors.standard);
   }
 };
-
 
 export default gameController;

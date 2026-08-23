@@ -1,11 +1,12 @@
 import { shapeIntoMongooseObjectId } from "../libs/config";
 import { FavouriteGroup } from "../libs/enums/favourites.enum";
+import { TeamOrder } from "../libs/enums/team.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { Direction, T } from "../libs/types/common";
 import { FavouriteInput } from "../libs/types/favourite";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { ProductInquiry } from "../libs/types/product";
-import { TeamInput, TeamInquiry, TeamOrder } from "../libs/types/team";
+import { TeamInput, TeamInquiry } from "../libs/types/team";
 import FavouriteService from "../models/Favourite.service";
 import TeamService from "../models/Team.service";
 import { Response, Request } from "express";
