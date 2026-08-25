@@ -22,7 +22,7 @@ class FavouriteService {
     group?: FavouriteGroup,
   ): Promise<Favourite[]> {
     try {
-      const match: any = { memberId: member._id };
+      const match: any = { memberId: shapeIntoMongooseObjectId(member._id) };
       if (group) match.favouriteGroup = group;
 
       const result = await this.favouriteModel
