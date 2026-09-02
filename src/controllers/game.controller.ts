@@ -16,7 +16,7 @@ const gameController: T = {};
 // SPA
 gameController.getGames = async (req: ExtendedRequest, res: Response) => {
   try {
-    const { page, limit, gameAddress, gameStatus, startDate, endDate } = req.query;
+    const { page, limit, gameAddress, gameStatus, startDate, endDate, teamId } = req.query;
 
     const inquiry: GameInquiry = {
       page: Number(page) || 1,
@@ -27,6 +27,7 @@ gameController.getGames = async (req: ExtendedRequest, res: Response) => {
     if (gameStatus) inquiry.gameStatus = gameStatus as GameStatus;
     if (startDate) inquiry.startDate = new Date(startDate as string);
     if (endDate) inquiry.endDate = new Date(endDate as string);
+    if (teamId) inquiry.teamId = String(teamId)
     if (req.member?.memberAddress) inquiry.memberAddress = req.member.memberAddress ;
 
     const result = await gameService.getGames(inquiry);

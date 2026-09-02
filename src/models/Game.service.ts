@@ -19,6 +19,10 @@ class GameService {
 
     if (inquiry.gameAddress) match.gameAddress = inquiry.gameAddress;
     if (inquiry.gameStatus) match.gameStatus = inquiry.gameStatus;
+    if (inquiry.teamId) {
+      inquiry.teamId = shapeIntoMongooseObjectId(inquiry.teamId);
+      match.$or = [{ teamAId: inquiry.teamId }, { teamBId: inquiry.teamId }];
+    }
 
     if (inquiry.startDate || inquiry.endDate) {
       match.gameDate = {};
@@ -39,7 +43,7 @@ class GameService {
                     1,
                   ],
                 }
-              : 0, // no member address known — everyone ties, sort falls through to gameDate only
+              : 0,
           },
         },
         {
