@@ -153,6 +153,7 @@ memberController.retrieveAuth = async (
 ) => {
   try {
     const token = req.cookies["accessToken"];
+    
     if (token) req.member = await authService.checkAuth(token);
 
     next();

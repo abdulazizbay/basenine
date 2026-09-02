@@ -68,7 +68,9 @@ class TeamService {
 
   public async getTeam(memberId: ObjectId | null, id: string): Promise<Team> {
     const teamId = shapeIntoMongooseObjectId(id);
-
+     const memberObjectId = memberId
+        ? shapeIntoMongooseObjectId(memberId)
+        : null;
     const result = await this.teamModel
       .aggregate([
         { $match: { _id: teamId } },
@@ -83,7 +85,7 @@ class TeamService {
                     $and: [
                       { $eq: ["$favouriteRefId", "$$targetId"] },
                       { $eq: ["$favouriteGroup", FavouriteGroup.TEAM] },
-                      { $eq: ["$memberId", memberId] },
+                      { $eq: ["$memberId", memberObjectId] },
                     ],
                   },
                 },
