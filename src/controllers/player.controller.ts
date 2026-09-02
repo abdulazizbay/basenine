@@ -6,6 +6,7 @@ import PlayerService from "../models/Player.service";
 import { Response, Request } from "express";
 import TeamService from "../models/Team.service";
 import { PlayerOrder } from "../libs/enums/player.enum";
+import { shapeIntoMongooseObjectId } from "../libs/config";
 
 const playerService = new PlayerService();
 const teamService = new TeamService();
@@ -15,7 +16,7 @@ const playerController: T = {};
 // SPA
 playerController.getPlayers = async (req: Request, res: Response) => {
   try {
-    const { page, limit, order, direction, search } = req.query;
+    const { page, limit, order, direction, search, teamId } = req.query;
     const inquiry: PlayerInquiry = {
       order: order as PlayerOrder,
       page: Number(page),
@@ -23,6 +24,7 @@ playerController.getPlayers = async (req: Request, res: Response) => {
       direction: Number(direction) as Direction,
     };
     if (search) inquiry.search = String(search);
+    if (teamId) inquiry.teamId = String(teamId);
     const result = await playerService.getPlayers(inquiry);
     res.status(HttpCode.OK).json({ result });
   } catch (err) {

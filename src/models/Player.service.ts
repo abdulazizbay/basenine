@@ -31,6 +31,7 @@ class PlayerService {
     if (inquiry.search) {
       match.playerNick = { $regex: new RegExp(inquiry.search, "i") };
     }
+    if (inquiry.teamId) match.teamId = shapeIntoMongooseObjectId(inquiry.teamId);
 
     const sort: T = { [inquiry.order]: inquiry.direction };
 

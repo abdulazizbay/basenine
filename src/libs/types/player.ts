@@ -30,12 +30,14 @@ export interface PlayerInput {
   teamId?: ObjectId;
   //status
 }
+
 export interface PlayerInquiry {
   order: PlayerOrder;
   direction: Direction;
   page: number;
   limit: number;
   search?: string;
+  teamId?: string
 }
 
 
