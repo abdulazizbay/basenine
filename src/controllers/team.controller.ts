@@ -2,7 +2,7 @@ import { shapeIntoMongooseObjectId } from "../libs/config";
 import { FavouriteGroup } from "../libs/enums/favourites.enum";
 import { TeamOrder } from "../libs/enums/team.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { Direction, T } from "../libs/types/common";
+import { Direction, OrdinaryInquiry, T } from "../libs/types/common";
 import { FavouriteInput } from "../libs/types/favourite";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { ProductInquiry } from "../libs/types/product";
@@ -88,12 +88,16 @@ teamController.subscribeTeam = async (req: ExtendedRequest, res: Response) => {
     res.json({ result });
   } catch (err) {
     console.log("Error, subscribeTeam", err);
-    const message = err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
+    const message =
+      err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
     res.status(err instanceof Errors ? err.code : 400).json({ message });
   }
 };
 
-teamController.unsubscribeTeam = async (req: ExtendedRequest, res: Response) => {
+teamController.unsubscribeTeam = async (
+  req: ExtendedRequest,
+  res: Response,
+) => {
   try {
     const { id } = req.params;
     const input: FavouriteInput = {
@@ -106,7 +110,28 @@ teamController.unsubscribeTeam = async (req: ExtendedRequest, res: Response) => 
     res.json({ data: true });
   } catch (err) {
     console.log("Error, unsubscribeTeam", err);
-    const message = err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
+    const message =
+      err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
+    res.status(err instanceof Errors ? err.code : 400).json({ message });
+  }
+};
+
+teamController.getVisitedTeams = async (req: ExtendedRequest, res: Response) => {
+  try {
+   
+    const memberId = req.member._id;
+    const { page, limit } = req.query;
+    const inquiry: OrdinaryInquiry = {
+      page: Number(page),
+      limit: Number(limit),
+    };
+
+    const result = await teamService.getVisitedTeams(memberId, inquiry);
+    res.json(result);
+  } catch (err) {
+    console.log("Error, getVisitedTeams", err);
+    const message =
+      err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
     res.status(err instanceof Errors ? err.code : 400).json({ message });
   }
 };

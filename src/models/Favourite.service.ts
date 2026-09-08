@@ -8,8 +8,9 @@ import {
 } from "../libs/types/favourite";
 import { Member } from "../libs/types/member";
 import FavouritesModel from "../schema/Favourites.model";
-import TeamModel from "../schema/Team.model";
+import { ObjectId } from "mongoose";
 import TeamService from "./Team.service";
+import { OrdinaryInquiry } from "../libs/types/common";
 class FavouriteService {
   private readonly favouriteModel;
   private readonly teamService;
@@ -151,15 +152,17 @@ class FavouriteService {
       await this.teamService.updateSubscriberCount(input.favouriteRefId, -1);
     }
   }
-
-  //   public async insertMemberView(input: ViewInput): Promise<View> {
-  //     try {
-  //       return await this.viewModel.create(input);
-  //     } catch (err) {
-  //       console.log("ERROR, model: insertMemberView: ", err);
-  //       throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED);
-  //     }
-  //   }
+  public async getTeamFavourites(
+    memberId: ObjectId,
+    favouriteGroup: FavouriteGroup,
+  ): Promise<Set<string>> {
+    const data = await this.favouriteModel.find({memberId, favouriteGroup})
+    return new Set(
+        data.map((ele: Favourite) => ele.favouriteRefId.toString()),
+    );
+  }
 }
+
+  
 
 export default FavouriteService;

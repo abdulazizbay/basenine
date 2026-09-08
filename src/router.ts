@@ -10,7 +10,6 @@ import gameController from "./controllers/game.controller";
 const router = express.Router();
 
 // Memeber
-// router.get("/member/restaurant", memberController.getRestaurant);
 router.post("/member/login", memberController.login);
 
 router.post("/member/signup", memberController.signup);
@@ -34,34 +33,65 @@ router.post(
 // Team
 router.get("/team/all", teamController.getTeams);
 router.get("/team/options", teamController.getTeamOptions);
-router.get("/team/:id", memberController.retrieveAuth, teamController.getTeam)
+router.get(
+  "/team/visited",
+  memberController.verifyAuth,
+  teamController.getVisitedTeams,
+);
+router.get("/team/:id", memberController.retrieveAuth, teamController.getTeam);
 router.get("/team/:id/subscribers", teamController.getTeamSubscribers);
 router.get(
   "/team/:id/subscribe",
-  memberController.verifyAuth, 
+  memberController.verifyAuth,
   teamController.subscribeTeam,
 );
 router.get(
   "/team/:id/unsubscribe",
-  memberController.verifyAuth, 
+  memberController.verifyAuth,
   teamController.unsubscribeTeam,
 );
+
 // Player
 router.get("/player/all", playerController.getPlayers);
-router.get("/player/:id", memberController.retrieveAuth, playerController.getPlayer)
+router.get(
+  "/player/visited",
+  memberController.verifyAuth,
+  playerController.getPlayerVisited,
+);
+router.get(
+  "/player/:id",
+  memberController.retrieveAuth,
+  playerController.getPlayer,
+);
 
 // Game
 router.get("/game/all", memberController.retrieveAuth, gameController.getGames);
-router.get("/game/:id", gameController.getGame)
+router.get("/game/:id", gameController.getGame);
 
 // router.get("/member/top-users", memberController.getTopUsers);
 
 // Product
 router.get("/product/all", productController.getProducts);
-router.get("/product/:id", memberController.retrieveAuth, productController.getProduct)
+router.get(
+  "/product/:id",
+  memberController.retrieveAuth,
+  productController.getProduct,
+);
 
 // Order
-router.post("/order/create", memberController.verifyAuth, orderController.createOrder)
-router.get("/order/all", memberController.verifyAuth, orderController.getMyOrders)
-router.post("/order/update", memberController.verifyAuth, orderController.updateOrder)
+router.post(
+  "/order/create",
+  memberController.verifyAuth,
+  orderController.createOrder,
+);
+router.get(
+  "/order/all",
+  memberController.verifyAuth,
+  orderController.getMyOrders,
+);
+router.post(
+  "/order/update",
+  memberController.verifyAuth,
+  orderController.updateOrder,
+);
 export default router;

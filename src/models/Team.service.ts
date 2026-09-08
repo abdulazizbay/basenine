@@ -1,7 +1,6 @@
 import { shapeIntoMongooseObjectId } from "../libs/config";
-import { Address } from "../libs/enums/common.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { T } from "../libs/types/common";
+import { OrdinaryInquiry, PaginatedResult, T } from "../libs/types/common";
 import { ObjectId } from "mongoose";
 import {
   Team,
@@ -15,6 +14,7 @@ import { ViewInput } from "../libs/types/view";
 import { ViewGroup } from "../libs/enums/view.enum";
 import ViewService from "./View.service";
 import { FavouriteGroup } from "../libs/enums/favourites.enum";
+import FavouriteService from "./Favourite.service";
 
 class TeamService {
   private readonly teamModel;
@@ -68,9 +68,9 @@ class TeamService {
 
   public async getTeam(memberId: ObjectId | null, id: string): Promise<Team> {
     const teamId = shapeIntoMongooseObjectId(id);
-     const memberObjectId = memberId
-        ? shapeIntoMongooseObjectId(memberId)
-        : null;
+    const memberObjectId = memberId
+      ? shapeIntoMongooseObjectId(memberId)
+      : null;
     const result = await this.teamModel
       .aggregate([
         { $match: { _id: teamId } },
@@ -137,6 +137,32 @@ class TeamService {
       )
       .exec();
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+    return result;
+  }
+  public async getVisitedTeams(
+    memberId: ObjectId,
+    inquiry: OrdinaryInquiry,
+  ): Promise<PaginatedResult<T>> {
+    const memberObjectId = memberId
+      ? shapeIntoMongooseObjectId(memberId)
+      : null;
+    const result = await this.viewService.getVisited(
+      memberObjectId,
+      inquiry,
+      ViewGroup.TEAM,
+    );
+
+    const favouriteService = new FavouriteService(); 
+    const favouritedIds = await favouriteService.getTeamFavourites(
+      memberObjectId,
+      FavouriteGroup.TEAM,
+    );
+
+    result.list = result.list.map((team) => ({
+      ...team,
+      meFavourited: favouritedIds.has(team._id.toString()),
+    }));
+
     return result;
   }
 
