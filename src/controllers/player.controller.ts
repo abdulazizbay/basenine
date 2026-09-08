@@ -1,5 +1,5 @@
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { Direction, T } from "../libs/types/common";
+import { Direction, OrdinaryInquiry, T } from "../libs/types/common";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { PlayerInput, PlayerInquiry } from "../libs/types/player";
 import PlayerService from "../models/Player.service";
@@ -45,6 +45,26 @@ playerController.getPlayer = async (req: ExtendedRequest, res: Response) => {
     else res.status(Errors.standard.code).json(Errors.standard);
   }
 };
+playerController.getVisitedPlayers= async (req: ExtendedRequest, res: Response) => {
+  try {
+   
+    const memberId = req.member._id;
+    const { page, limit } = req.query;
+    const inquiry: OrdinaryInquiry = {
+      page: Number(page),
+      limit: Number(limit),
+    };
+
+    const result = await playerService.getVisitedPlayers(memberId, inquiry);
+    res.json(result);
+  } catch (err) {
+    console.log("Error, getVisitedPlayers", err);
+    const message =
+      err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
+    res.status(err instanceof Errors ? err.code : 400).json({ message });
+  }
+};
+
 
 // /**  SSR */
 playerController.createNewPlayer = async (req: AdminRequest, res: Response) => {

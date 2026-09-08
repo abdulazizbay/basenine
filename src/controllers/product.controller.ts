@@ -1,5 +1,5 @@
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { Direction, T } from "../libs/types/common";
+import { Direction, OrdinaryInquiry, T } from "../libs/types/common";
 import { Request, Response } from "express";
 import ProductService from "../models/Product.service";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
@@ -47,6 +47,26 @@ productController.getProduct = async (req: ExtendedRequest, res: Response) => {
   } catch (err) {
     if (err instanceof Errors) res.status(err.code).json(err);
     else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
+
+productController.getVisitedProducts= async (req: ExtendedRequest, res: Response) => {
+  try {
+   
+    const memberId = req.member._id;
+    const { page, limit } = req.query;
+    const inquiry: OrdinaryInquiry = {
+      page: Number(page),
+      limit: Number(limit),
+    };
+
+    const result = await productService.getVisitedProducts(memberId, inquiry);
+    res.json(result);
+  } catch (err) {
+    console.log("Error, getVisitedProducts", err);
+    const message =
+      err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
+    res.status(err instanceof Errors ? err.code : 400).json({ message });
   }
 };
 

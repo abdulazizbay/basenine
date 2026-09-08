@@ -1,7 +1,7 @@
 import { shapeIntoMongooseObjectId } from "../libs/config";
 import { ProductStatus } from "../libs/enums/product.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { T } from "../libs/types/common";
+import { OrdinaryInquiry, PaginatedResult, T } from "../libs/types/common";
 import {
   Product,
   ProductInput,
@@ -31,47 +31,51 @@ class ProductService {
   // filter by collection,
   // add search
   public async getProducts(inquiry: ProductInquiry): Promise<Products> {
-  const match: T = { productStatus: ProductStatus.PROCESS };
+    const match: T = { productStatus: ProductStatus.PROCESS };
 
-  if (inquiry.productCollection) match.productCollection = inquiry.productCollection;
-  if (inquiry.teamId) match.teamId = shapeIntoMongooseObjectId(inquiry.teamId);
-  if (inquiry.search) match.productName = { $regex: new RegExp(inquiry.search, "i") };
+    if (inquiry.productCollection)
+      match.productCollection = inquiry.productCollection;
+    if (inquiry.teamId)
+      match.teamId = shapeIntoMongooseObjectId(inquiry.teamId);
+    if (inquiry.search)
+      match.productName = { $regex: new RegExp(inquiry.search, "i") };
 
-  const sort: T = { [inquiry.order]: inquiry.direction };
+    const sort: T = { [inquiry.order]: inquiry.direction };
 
-  const result = await this.productModel
-    .aggregate([
-      { $match: match },
-      {
-        $facet: {
-          list: [
-            { $sort: sort },
-            { $skip: (inquiry.page - 1) * inquiry.limit },
-            { $limit: inquiry.limit },
-            {
-              $lookup: {
-                from: "teams",
-                localField: "teamId",
-                foreignField: "_id",
-                as: "teamId",
+    const result = await this.productModel
+      .aggregate([
+        { $match: match },
+        {
+          $facet: {
+            list: [
+              { $sort: sort },
+              { $skip: (inquiry.page - 1) * inquiry.limit },
+              { $limit: inquiry.limit },
+              {
+                $lookup: {
+                  from: "teams",
+                  localField: "teamId",
+                  foreignField: "_id",
+                  as: "teamId",
+                },
               },
-            },
-            {
-              $unwind: {
-                path: "$teamId",
-                preserveNullAndEmptyArrays: true,
+              {
+                $unwind: {
+                  path: "$teamId",
+                  preserveNullAndEmptyArrays: true,
+                },
               },
-            },
-          ],
-          metaCounter: [{ $count: "total" }],
+            ],
+            metaCounter: [{ $count: "total" }],
+          },
         },
-      },
-    ])
-    .exec();
+      ])
+      .exec();
 
-  if (!result.length) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
-  return result[0];
-}
+    if (!result.length)
+      throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
+    return result[0];
+  }
 
   public async getProduct(
     memberId: ObjectId | null,
@@ -113,20 +117,36 @@ class ProductService {
   }
   // used in order
   public async deductStock(input: OrderitemInput[]): Promise<void> {
-  const promisedList = input.map(async (item: OrderitemInput) => {
-    const productId = shapeIntoMongooseObjectId(item.productId);
-    const result = await this.productModel
-      .updateOne(
-        { _id: productId, productLeftCount: { $gte: item.itemQuantity } },
-        { $inc: { productLeftCount: -item.itemQuantity } },
-      )
-      .exec();
-    if (result.matchedCount === 0) {
-      throw new Errors(HttpCode.BAD_REQUEST, Message.SOMETHING_WENT_WRONG); // not enough stock
-    }
-  });
-  await Promise.all(promisedList);
-}
+    const promisedList = input.map(async (item: OrderitemInput) => {
+      const productId = shapeIntoMongooseObjectId(item.productId);
+      const result = await this.productModel
+        .updateOne(
+          { _id: productId, productLeftCount: { $gte: item.itemQuantity } },
+          { $inc: { productLeftCount: -item.itemQuantity } },
+        )
+        .exec();
+      if (result.matchedCount === 0) {
+        throw new Errors(HttpCode.BAD_REQUEST, Message.SOMETHING_WENT_WRONG); // not enough stock
+      }
+    });
+    await Promise.all(promisedList);
+  }
+
+  public async getVisitedProducts(
+    memberId: ObjectId,
+    inquiry: OrdinaryInquiry,
+  ): Promise<PaginatedResult<T>> {
+    const memberObjectId = memberId
+      ? shapeIntoMongooseObjectId(memberId)
+      : null;
+    const result = await this.viewService.getVisited(
+      memberObjectId,
+      inquiry,
+      ViewGroup.PRODUCT,
+    );
+
+    return result;
+  }
 
   /**  SSR */
 

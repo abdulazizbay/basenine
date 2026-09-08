@@ -56,7 +56,7 @@ router.get("/player/all", playerController.getPlayers);
 router.get(
   "/player/visited",
   memberController.verifyAuth,
-  playerController.getPlayerVisited,
+  playerController.getVisitedPlayers,
 );
 router.get(
   "/player/:id",
@@ -72,6 +72,11 @@ router.get("/game/:id", gameController.getGame);
 
 // Product
 router.get("/product/all", productController.getProducts);
+router.get(
+  "/product/visited",
+  memberController.verifyAuth,
+  productController.getVisitedProducts,
+);
 router.get(
   "/product/:id",
   memberController.retrieveAuth,

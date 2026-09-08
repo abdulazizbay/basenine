@@ -1,14 +1,13 @@
 import { shapeIntoMongooseObjectId } from "../libs/config";
 import { ViewGroup } from "../libs/enums/view.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { T } from "../libs/types/common";
+import { OrdinaryInquiry, PaginatedResult, T } from "../libs/types/common";
 import {
   Player,
   PlayerInput,
   PlayerInquiry,
   Players,
 } from "../libs/types/player";
-import { Team, TeamInput, TeamUpdateInput } from "../libs/types/team";
 import { ViewInput } from "../libs/types/view";
 import PlayerModel from "../schema/Player.model";
 import { ObjectId } from "mongoose";
@@ -31,7 +30,8 @@ class PlayerService {
     if (inquiry.search) {
       match.playerNick = { $regex: new RegExp(inquiry.search, "i") };
     }
-    if (inquiry.teamId) match.teamId = shapeIntoMongooseObjectId(inquiry.teamId);
+    if (inquiry.teamId)
+      match.teamId = shapeIntoMongooseObjectId(inquiry.teamId);
 
     const sort: T = { [inquiry.order]: inquiry.direction };
 
@@ -105,6 +105,22 @@ class PlayerService {
           .exec();
       }
     }
+    return result;
+  }
+
+  public async getVisitedPlayers(
+    memberId: ObjectId,
+    inquiry: OrdinaryInquiry,
+  ): Promise<PaginatedResult<T>> {
+    const memberObjectId = memberId
+      ? shapeIntoMongooseObjectId(memberId)
+      : null;
+    const result = await this.viewService.getVisited(
+      memberObjectId,
+      inquiry,
+      ViewGroup.PLAYER,
+    );
+
     return result;
   }
 
