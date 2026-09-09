@@ -508,3 +508,38 @@ input[type="number"]::-webkit-outer-spin-button {
     padding: 22px;
   }
 }
+
+.cell-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cell-score .score-sep {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.spec-score {
+  width: 52px;
+  height: 32px;
+  padding: 6px 8px;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+}
+
+.spec-score:focus {
+  outline: none;
+  border-color: var(--text-muted);
+}
+
+.spec-score.saved {
+  border-color: #2f9e57;
+  background: #eefbf2;
+}

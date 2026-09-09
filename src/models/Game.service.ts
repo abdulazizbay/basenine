@@ -2,7 +2,13 @@ import { shapeIntoMongooseObjectId } from "../libs/config";
 import { GameStatus } from "../libs/enums/game.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { T } from "../libs/types/common";
-import { Game, GameInput, GameInquiry, Games } from "../libs/types/game";
+import {
+  Game,
+  GameInput,
+  GameInputUpdate,
+  GameInquiry,
+  Games,
+} from "../libs/types/game";
 import GameModel from "../schema/Game.model";
 
 class GameService {
@@ -115,11 +121,14 @@ class GameService {
   }
   public async updateChosenGame(
     id: any,
-    gameStatus: GameStatus,
+    input: GameInputUpdate,
   ): Promise<Game> {
     id = shapeIntoMongooseObjectId(id);
     const result = await this.gameModel
-      .findByIdAndUpdate({ _id: id }, { gameStatus: gameStatus }, { new: true })
+      .findByIdAndUpdate({ _id: id }, input, {
+        new: true,
+        runValidators: true,
+      })
       .exec();
     if (!result) throw new Errors(HttpCode.NOT_MODIFIED, Message.UPDATE_FAILED);
     return result;

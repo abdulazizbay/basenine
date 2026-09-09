@@ -18,7 +18,17 @@ const GameSchema = new Schema(
     gameStatus: {
       type: String,
       enum: GameStatus,
-      default: GameStatus.UPCOMING
+      default: GameStatus.UPCOMING,
+    },
+    teamAScore: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
+    teamBScore: {
+      type: Number,
+      default: null,
+      min: 0,
     },
   },
   { timestamps: true },

@@ -56,6 +56,7 @@
                   <th scope="col">Date</th>
                   <th scope="col">Address</th>
                   <th scope="col">Status</th>
+                  <th scope="col">Score</th>
                 </tr>
               </thead>
               <tbody>
@@ -76,6 +77,27 @@
                       <option value="PROCESS" <%= value.gameStatus === "PROCESS" ? "selected" : "" %>>PROCESS</option>
                       <option value="FINISHED" <%= value.gameStatus === "FINISHED" ? "selected" : "" %>>FINISHED</option>
                     </select>
+                  </td>
+                  <td>
+                    <div class="cell-score">
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        class="spec-score score-a"
+                        data-id="<%= value._id %>"
+                        value="<%= value.teamAScore %>"
+                      />
+                      <span class="score-sep">&ndash;</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        class="spec-score score-b"
+                        data-id="<%= value._id %>"
+                        value="<%= value.teamBScore %>"
+                      />
+                    </div>
                   </td>
                 </tr>
                 <% }) %>

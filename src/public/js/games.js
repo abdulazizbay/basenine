@@ -1,7 +1,6 @@
 console.log("Games frontend javascript file");
 
 $(function () {
-  /* Swap list view <-> create-game view */
   $("#process-btn").on("click", () => {
     $("#gameListView").removeClass("active");
     $("#gameFormView").addClass("active");
@@ -34,6 +33,40 @@ $(function () {
     } catch (err) {
       console.log(err);
       alert("Game update failed");
+    }
+  });
+
+  $(".spec-score").on("change", async function (e) {
+    const $input = $(e.target);
+    const id = $input.data("id");
+    const rawA = $(`.score-a[data-id="${id}"]`).val();
+    const rawB = $(`.score-b[data-id="${id}"]`).val();
+
+    const teamAScore = rawA === "" ? null : Number(rawA);
+    const teamBScore = rawB === "" ? null : Number(rawB);
+
+    if (teamAScore < 0 || teamBScore < 0) {
+      alert("Scores cannot be negative");
+      return;
+    }
+
+    try {
+      if (teamAScore !== null && teamBScore !== null) {
+        const response = await axios.post(`/admin/game/${id}`, {
+          teamAScore,
+          teamBScore,
+        });
+
+        if (response.data) {
+          $input.addClass("saved");
+          setTimeout(() => $input.removeClass("saved"), 1200);
+        } else {
+          alert("Score update failed");
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Score update failed");
     }
   });
 });

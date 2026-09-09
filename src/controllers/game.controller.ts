@@ -16,7 +16,8 @@ const gameController: T = {};
 // SPA
 gameController.getGames = async (req: ExtendedRequest, res: Response) => {
   try {
-    const { page, limit, gameAddress, gameStatus, startDate, endDate, teamId } = req.query;
+    const { page, limit, gameAddress, gameStatus, startDate, endDate, teamId } =
+      req.query;
 
     const inquiry: GameInquiry = {
       page: Number(page) || 1,
@@ -27,8 +28,9 @@ gameController.getGames = async (req: ExtendedRequest, res: Response) => {
     if (gameStatus) inquiry.gameStatus = gameStatus as GameStatus;
     if (startDate) inquiry.startDate = new Date(startDate as string);
     if (endDate) inquiry.endDate = new Date(endDate as string);
-    if (teamId) inquiry.teamId = String(teamId)
-    if (req.member?.memberAddress) inquiry.memberAddress = req.member.memberAddress ;
+    if (teamId) inquiry.teamId = String(teamId);
+    if (req.member?.memberAddress)
+      inquiry.memberAddress = req.member.memberAddress;
 
     const result = await gameService.getGames(inquiry);
     res.json(result);
@@ -87,7 +89,6 @@ gameController.getAllGames = async (req: AdminRequest, res: Response) => {
       gameService.getAllGames(),
       teamService.getAllTeams(),
     ]);
-    console.log(games);
 
     res.render("games", { games, teams });
   } catch (err) {
@@ -97,11 +98,12 @@ gameController.getAllGames = async (req: AdminRequest, res: Response) => {
   }
 };
 
-gameController.updateChosenGame = async (req: Request, res: Response) => {
+gameController.updateChosenGame = async (req: AdminRequest, res: Response) => {
   try {
     const id = req.params.id;
-    const { gameStatus } = req.body;
-    const result = await gameService.updateChosenGame(id, gameStatus);
+    console.log(id, req.body);
+
+    const result = await gameService.updateChosenGame(id, req.body);
     res.status(HttpCode.OK).json({ data: result });
   } catch (err) {
     console.log("Error, updateChosenGame", err);
