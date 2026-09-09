@@ -136,6 +136,31 @@ teamController.getVisitedTeams = async (req: ExtendedRequest, res: Response) => 
   }
 };
 
+teamController.getFavouriteTeams = async (
+  req: ExtendedRequest,
+  res: Response,
+) => {
+  try {
+    const memberId = req.member._id;
+    const { page, limit } = req.query;
+    const inquiry: OrdinaryInquiry = {
+      page: Number(page),
+      limit: Number(limit),
+    };
+
+    const result = await favouriteService.getFavouriteTeams(
+      memberId,
+      inquiry,
+    );
+    res.json(result);
+  } catch (err) {
+    console.log("Error, getFavouriteTeams", err);
+    const message =
+      err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
+    res.status(err instanceof Errors ? err.code : 400).json({ message });
+  }
+};
+
 // /**  SSR */
 teamController.createNewTeam = async (req: AdminRequest, res: Response) => {
   try {

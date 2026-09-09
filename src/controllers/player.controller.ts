@@ -6,7 +6,6 @@ import PlayerService from "../models/Player.service";
 import { Response, Request } from "express";
 import TeamService from "../models/Team.service";
 import { PlayerOrder } from "../libs/enums/player.enum";
-import { shapeIntoMongooseObjectId } from "../libs/config";
 
 const playerService = new PlayerService();
 const teamService = new TeamService();

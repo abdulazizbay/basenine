@@ -38,6 +38,11 @@ router.get(
   memberController.verifyAuth,
   teamController.getVisitedTeams,
 );
+router.get(
+  "/team/favourites",
+  memberController.verifyAuth,
+  teamController.getFavouriteTeams,
+);
 router.get("/team/:id", memberController.retrieveAuth, teamController.getTeam);
 router.get("/team/:id/subscribers", teamController.getTeamSubscribers);
 router.get(

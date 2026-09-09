@@ -6,28 +6,16 @@ import {
   MemberInput,
   MemberUpdateInput,
 } from "../libs/types/member";
-import { MemberType } from "../libs/enums/member.enum";
 import MemberService from "../models/Member.service";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import AuthService from "../models/Auth.service";
 import { AUTH_TIMER } from "../libs/config";
-import FavouriteService from "../models/Favourite.service";
 
 const memberService = new MemberService();
 const authService = new AuthService();
-const favouriteService = new FavouriteService();
 
 const memberController: T = {};
 
-// memberController.getRestaurant = async (req: Request, res: Response) => {
-//   try {
-//     const result = await memberService.getRestaurant();
-//     res.status(HttpCode.OK).json(result);
-//   } catch (err) {
-//     if (err instanceof Errors) res.status(err.code).json(err);
-//     else res.status(Errors.standard.code).json(Errors.standard.message);
-//   }
-// };
 memberController.login = async (req: Request, res: Response) => {
   try {
     const input: LoginInput = req.body;
@@ -90,15 +78,8 @@ memberController.getMemberDetail = async (
   res: Response,
 ) => {
   try {
-    const [member, favourites] = await Promise.all([
-      memberService.getMemberDetail(req.member),
-      favouriteService.getFavourites(req.member),
-    ]);
-
-    res.status(HttpCode.OK).json({
-      ...member,
-      favourites,
-    });
+    const result = await memberService.getMemberDetail(req.member);
+    res.status(HttpCode.OK).json(result);
   } catch (err) {
     if (err instanceof Errors) res.status(err.code).json(err);
     else res.status(Errors.standard.code).json(Errors.standard.message);

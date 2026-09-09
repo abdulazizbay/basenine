@@ -6,11 +6,10 @@ import {
   FavouriteInput,
   TeamSubscribers,
 } from "../libs/types/favourite";
-import { Member } from "../libs/types/member";
 import FavouritesModel from "../schema/Favourites.model";
 import { ObjectId } from "mongoose";
 import TeamService from "./Team.service";
-import { OrdinaryInquiry } from "../libs/types/common";
+import { OrdinaryInquiry, PaginatedResult, T } from "../libs/types/common";
 class FavouriteService {
   private readonly favouriteModel;
   private readonly teamService;
@@ -18,63 +17,7 @@ class FavouriteService {
     this.favouriteModel = FavouritesModel;
     this.teamService = new TeamService();
   }
-  public async getFavourites(
-    member: Member,
-    group?: FavouriteGroup,
-  ): Promise<Favourite[]> {
-    try {
-      const match: any = { memberId: shapeIntoMongooseObjectId(member._id) };
-      if (group) match.favouriteGroup = group;
-
-      const result = await this.favouriteModel
-        .aggregate([
-          { $match: match },
-          {
-            $lookup: {
-              from: "teams",
-              let: { refId: "$favouriteRefId", grp: "$favouriteGroup" },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        { $eq: ["$_id", "$$refId"] },
-                        { $eq: ["$$grp", "TEAM"] },
-                      ],
-                    },
-                  },
-                },
-              ],
-              as: "team",
-            },
-          },
-          {
-            $lookup: {
-              from: "players",
-              let: { refId: "$favouriteRefId", grp: "$favouriteGroup" },
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $and: [
-                        { $eq: ["$_id", "$$refId"] },
-                        { $eq: ["$$grp", "PLAYER"] },
-                      ],
-                    },
-                  },
-                },
-              ],
-              as: "player",
-            },
-          },
-        ])
-        .exec();
-
-      return result;
-    } catch (err) {
-      throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUND);
-    }
-  }
+  
 
   public async getTeamSubscribers(
     teamId: string,
@@ -104,6 +47,52 @@ class FavouriteService {
       })),
       metaCounter: [{ total }],
     };
+  }
+
+  public async getFavouriteTeams(
+    memberId: ObjectId,
+    inquiry: OrdinaryInquiry,
+  ): Promise<PaginatedResult<T>> {
+    try {
+      const { page, limit } = inquiry;
+      const memberObjectId = shapeIntoMongooseObjectId(memberId);
+      const match: T = {
+        memberId: memberObjectId,
+        favouriteGroup: FavouriteGroup.TEAM,
+      };
+
+      const data = await this.favouriteModel
+        .aggregate([
+          { $match: match },
+          { $sort: { createdAt: -1 } },
+          {
+            $lookup: {
+              from: "teams",
+              localField: "favouriteRefId",
+              foreignField: "_id",
+              as: "favouriteTeam",
+            },
+          },
+          { $unwind: "$favouriteTeam" },
+          {
+            $facet: {
+              list: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+              metaCounter: [{ $count: "total" }],
+            },
+          },
+        ])
+        .exec();
+
+      const result: PaginatedResult<T> = {
+        list: [],
+        metaCounter: data[0].metaCounter,
+      };
+      result.list = data[0].list.map((ele: T) => ele.favouriteTeam);
+      return result;
+    } catch (err) {
+      console.log("ERROR, model: getFavouriteTeams: ", err);
+      throw new Errors(HttpCode.BAD_REQUEST, Message.NO_DATA_FOUND);
+    }
   }
 
   public async checkFavouriteExistence(
