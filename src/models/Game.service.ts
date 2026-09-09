@@ -1,7 +1,7 @@
 import { shapeIntoMongooseObjectId } from "../libs/config";
 import { GameStatus } from "../libs/enums/game.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import { T } from "../libs/types/common";
+import { Direction, T } from "../libs/types/common";
 import {
   Game,
   GameInput,
@@ -36,26 +36,18 @@ class GameService {
       if (inquiry.endDate) match.gameDate.$lte = new Date(inquiry.endDate);
     }
 
+    const direction =
+      inquiry.gameStatus === GameStatus.FINISHED
+        ? Direction.DESC
+        : Direction.ASC;
+
     const result = await this.gameModel
       .aggregate([
         { $match: match },
         {
-          $addFields: {
-            isLocal: inquiry.memberAddress
-              ? {
-                  $cond: [
-                    { $eq: ["$gameAddress", inquiry.memberAddress] },
-                    0,
-                    1,
-                  ],
-                }
-              : 0,
-          },
-        },
-        {
           $facet: {
             list: [
-              { $sort: { isLocal: 1, gameDate: 1 } },
+              { $sort: { gameDate: direction } },
               { $skip: (inquiry.page - 1) * inquiry.limit },
               { $limit: inquiry.limit },
               {
@@ -76,7 +68,6 @@ class GameService {
                 },
               },
               { $unwind: "$teamBId" },
-              { $project: { isLocal: 0 } },
             ],
             metaCounter: [{ $count: "total" }],
           },

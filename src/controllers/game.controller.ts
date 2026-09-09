@@ -29,8 +29,6 @@ gameController.getGames = async (req: ExtendedRequest, res: Response) => {
     if (startDate) inquiry.startDate = new Date(startDate as string);
     if (endDate) inquiry.endDate = new Date(endDate as string);
     if (teamId) inquiry.teamId = String(teamId);
-    if (req.member?.memberAddress)
-      inquiry.memberAddress = req.member.memberAddress;
 
     const result = await gameService.getGames(inquiry);
     res.json(result);

@@ -37,6 +37,5 @@ export interface GameInquiry {
   gameStatus?: GameStatus;
   startDate?: Date;
   endDate?: Date;
-  memberAddress?: Address;
   teamId?: string;
 }
