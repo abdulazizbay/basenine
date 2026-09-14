@@ -49,6 +49,16 @@ gameController.getGame = async (req: Request, res: Response) => {
   }
 };
 
+gameController.getStandings = async (req: Request, res: Response) => {
+  try {
+    const result = await gameService.getStandings();
+    res.json(result);
+  } catch (err) {
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standard.code).json(Errors.standard);
+  }
+};
+
 // playerController.getPlayer = async (req: ExtendedRequest, res: Response) => {
 //   try {
 //     const { id } = req.params;
@@ -99,7 +109,6 @@ gameController.getAllGames = async (req: AdminRequest, res: Response) => {
 gameController.updateChosenGame = async (req: AdminRequest, res: Response) => {
   try {
     const id = req.params.id;
-    console.log(id, req.body);
 
     const result = await gameService.updateChosenGame(id, req.body);
     res.status(HttpCode.OK).json({ data: result });

@@ -71,6 +71,7 @@ router.get(
 
 // Game
 router.get("/game/all", memberController.retrieveAuth, gameController.getGames);
+router.get("/game/standings", gameController.getStandings);
 router.get("/game/:id", gameController.getGame);
 
 // router.get("/member/top-users", memberController.getTopUsers);
